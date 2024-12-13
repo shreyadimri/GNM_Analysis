@@ -1,0 +1,35 @@
+project:
+  type: book
+
+book:
+  title: "Green Nest Material Meta-Analysis"
+  subtitle: "The adaptive value of green nest material across birds: A systematic review and meta-analysis"
+  author: "Shreya Dimri"
+  date: last-modified
+  chapters:
+    - index.qmd
+    - intro.qmd
+    - data_cleaning.qmd
+    - data_preparation.qmd
+    # - data_analysis.qmd
+
+bibliography: references.bib
+
+format:
+  html:
+   toc: true 
+   toc-title: "Table of Contents" 
+   toc-depth: 2 
+   toc-expand: 3 
+   toc-location: left 
+   mainfont: Verdana 
+   monofont: Jetbrains Mono 
+   fontsize: 12pt 
+   code-fold: True
+   df-print: paged 
+   highlight-style: github 
+  pdf:
+    documentclass: scrreprt
+
+editor: visual
+

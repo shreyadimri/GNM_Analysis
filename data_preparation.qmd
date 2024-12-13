@@ -1,0 +1,629 @@
+---
+title: "Data Preparation and Exploration"
+date: last-modified
+
+
+format:
+  html:
+   toc: true 
+   toc-title: "Table of Contents" 
+   toc-depth: 2 
+   toc-expand: 3 
+   toc-location: left 
+   mainfont: Verdana 
+   monofont: Jetbrains Mono 
+   fontsize: 12pt 
+   code-fold: true
+   df-print: paged 
+   highlight-style: github 
+   pdf: default
+   
+execute: 
+  warning: false
+  message: false
+  
+self-contained: true
+editor: visual
+---
+
+## Setting up workspace
+
+```{r setup, warning=FALSE, message=FALSE, echo=F}
+
+# Setting up workspace
+
+pacman::p_load(here, tidyverse, metafor, orchaRd,ggpubr,ggrepel) #Packages needed
+rm(list=ls()) ## cleaning up
+set.seed(8341) #set seed for reproducibility (for random number generation)
+
+# Loading cleaned dataset
+dataset_after_cleaning <- read_csv(here::here("data/input/dataset_after_cleaning.csv"))
+```
+
+#### Loading functions
+
+Some functions we will need in this manuscript.. sourced mainly from Nakagawa 2022 : Online tutorial <https://alistairmcnairsenior.github.io/Miss_SD_Sim/>
+
+```{r}
+
+# Function to calculate Geary's "number"
+  geary <- function(mean, sd, n){
+    (1 / (sd / mean)) * ((4*n^(3/2)) / (1 + 4*n))
+  }
+
+  
+
+# Shinichi Nakagawa, Daniel W. A. Noble, Malgorzata Lagisz, Rebecca Spake, Wolfgang Viechtbauer and Alistair M. Senior. 2022. A robust and readily implementable method for the meta-analysis of response ratios with and without missing standard deviations. Ecology Letters, DOI: 10.1111/ele.14144
+
+
+  # Functions provided in the workalong
+cv_avg <- function(x, sd, n, group, data, label = NULL, sub_b = TRUE, cv2=FALSE){
+
+  # Check if the name is specified or not. If not, then assign it the name of the mean, x, variable input in the function. https://stackoverflow.com/questions/60644445/converting-tidyeval-arguments-to-string
+  if(is.null(label)){
+    label <- purrr::map_chr(enquos(x), rlang::as_label)
+  }
+
+  # Calculate between study CV. Take weighted mean CV within study, and then take a weighted mean across studies of the within study CV. Weighted based on sample size and pooled sample size.
+  b_grp_cv_data <- data                                             %>%
+    dplyr::group_by({{group}})                            %>%
+    dplyr::mutate(   w_CV2 = weighted_CV({{sd}}, {{x}}, {{n}}, cv2=cv2),
+                     n_mean = mean({{n}}, na.rm = TRUE))   %>%
+    dplyr::ungroup(.)                                     %>%
+    dplyr::mutate(b_CV2 = weighted.mean(w_CV2, n_mean, na.rm = TRUE), .keep = "used")
+
+  # Make sure that label of the calculated columns is distinct from any other columns
+  names(b_grp_cv_data) <- paste0(names(b_grp_cv_data), "_", label)
+
+  # Append these calculated columns back to the original data and return the full dataset.
+  if(sub_b){
+    b_grp_cv_data <- b_grp_cv_data %>% dplyr::select(grep("b_", names(b_grp_cv_data)))
+    dat_new <- cbind(data, b_grp_cv_data)
+  } else {
+    dat_new <- cbind(data, b_grp_cv_data)
+  }
+
+  return(data.frame(dat_new))
+}
+
+# You also need the helper function
+
+weighted_CV <- function(sd, x, n, cv2=FALSE){
+  if(cv2){
+    weighted.mean(na_if((sd / x)^2, Inf), n, na.rm = TRUE)
+  }else{
+    weighted.mean(na_if((sd / x), Inf), n, na.rm = TRUE)^2
+  }
+}
+
+
+#' @title lnrr_laj
+#' @description Calculates log response ratio based on Taylor expansion from Jajeunesse 2011
+#' @param m1 Mean of treatment group 1
+#' @param m2 Mean of treatment group 2
+#' @param cv1_2 Coefficient of variation squared (CV^2) for treatment group 1
+#' @param cv2_2 Coefficient of variation squared (CV^2) for treatment group 2
+#' @param n1 Sample size for treatment group 1
+#' @param n2 Sample size for treatment group 2
+#' @param taylor A logical indicating whether to calculate point estimate with Taylor expansion.
+#'
+lnrr_laj <- function(m1, m2, cv1_2, cv2_2, n1, n2, taylor=TRUE){
+  if(taylor){
+    log(m1 / m2) + 0.5*((cv1_2 / n1) - (cv2_2 / n2))
+  } else {
+    log(m1 / m2)
+  }
+}
+
+#' @title v_lnrr_laj
+#' @description Calculates the sampling variance for log response ratio based on second order Taylor expansion proposed by Lajeunesse 2011
+#' @param cv1_2 Coefficient of variation squared (CV^2) for treatment group 1
+#' @param cv2_2 Coefficient of variation squared (CV^2) for treatment group 2
+#' @param n1 Sample size for treatment group 1
+#' @param n2 Sample size for treatment group 2
+#' @param taylor A logical indicating whether to calculate point estimate with Taylor expansion.
+v_lnrr_laj <- function(cv1_2, cv2_2, n1, n2,  taylor=TRUE){
+  if(taylor){
+  ((cv1_2) / n1) + ((cv2_2) / n2) +
+    ((cv1_2)^2 / (2*n1^2)) + ((cv2_2)^2 / (2*n2^2))
+  } else {
+    ((cv1_2) / n1) + ((cv2_2) / n2)
+  }
+}
+
+```
+
+### Excluding proxies that are to be checked
+
+<!--# These proxies are pending final decision so I am not including them in the analysis as of now, later this needs to be "CHECKED" -->
+
+```{r}
+
+# selecting dataset which are not flagged or to be checked
+dataset_analysis<-dataset_after_cleaning%>%
+   filter(proxy_decision != "check")
+
+#check what is excluded (as of now 19 rows are excluded)
+excluded_rows<- anti_join(dataset_after_cleaning, dataset_analysis)
+
+
+```
+
+### Effective Sample Size Calculation
+
+For comparisons involving the shared control or treatment groups across multiple studies, adjusting the sample sizes by dividing them by the number of times each group is included in comparisons. This adjustment helps to prevent any inflation of the effect sizes due to repeated use of the same groups.
+
+```{r effective sample size}
+
+dataset_analysis<-dataset_analysis%>%
+  mutate(effective_n_experiment=(n_experiment/shared_experiment),.after=n_experiment)%>%
+  mutate(effective_n_control=(n_control/shared_control),.after=n_control)
+
+```
+
+Checking the range of effective sample size in our dataset
+
+```{r}
+dataset_analysis%>%
+  summarise(control_min=min(effective_n_control,na.rm=T),
+            control_max=max(effective_n_control,na.rm=T),
+            na_control = sum(is.na(effective_n_control)),
+            experiment_min=min(effective_n_experiment,na.rm=T),
+            experiment_max=max(effective_n_experiment,na.rm=T),
+             na_experiment = sum(is.na(effective_n_experiment)))
+```
+
+We have some NA and some values of effective sample size 1 and below.. lets see where this is
+
+```{r}
+dataset_analysis%>%
+  filter(effective_n_control<2 | effective_n_experiment<2)
+```
+
+Many of these data points come from GNM_355. There are datapoints with sample size of 1 for some groups. We have extracted data by days and months.. I will combine these for this paper because of such low sample size. (We cannot estimate SMHD with 0.5 as an effective sample size)
+
+### Converting variance to SD
+
+There were no other measure of dispersion, only SE and SD, so no need to convert anything more.
+
+```{r Calculating SD}
+## Calculating sd from difference variance measures (only for se so far)
+
+# For experimental group
+dataset_analysis <- dataset_analysis %>%
+  mutate(sd_experiment = if_else(type_measure_dispersion_experiment %in% c('se', 'SE'), #condition to check
+      measure_dispersion_experiment * sqrt(as.numeric(n_experiment)), # do this if true
+      measure_dispersion_experiment), #else do this
+      .after=measure_dispersion_experiment)
+# For control group
+dataset_analysis <- dataset_analysis %>%
+  mutate(sd_control = if_else(type_measure_dispersion_control %in% c('se', 'SE'), #condition to check
+      measure_dispersion_control* sqrt(as.numeric(n_control)), # do this if true
+      measure_dispersion_control), #else do this
+      .after=measure_dispersion_control)
+```
+
+Some checks for the value of mean and SD
+
+```{r}
+# Some rows contain NAs, check why
+# contains_NA<-dataset_analysis%>%
+# filter(is.na(measure_central_tendency_experiment)|is.na(measure_dispersion_experiment))
+
+# 13 rows contain NA and I checked them manually, everything looks okay. 
+# - 4 rows contain only statistical test values and 
+# - 9 are missing data that authors did not provide for which we will use 0 as effect size. 
+```
+
+### Preparing Random Effects
+
+We will include the following random effects in all our models unless stated otherwise: 
+
+-   \(1\) paper_ID, which encompasses estimates extracted from the same primary study
+
+-   \(2\) experiment_ID
+
+-   \(3\) group_ID
+
+-   \(4\) repeated_traits_ID
+
+-   \(5\) observation_ID,
+
+which corresponds to a unit-level observation identity and models within-study variance (for more details on the selection of random effects (see Section Miscellaneous synthesis details).
+
+```{r Prepare Random Effects as Unique ID}
+
+
+dataset_analysis<-dataset_analysis%>%
+  mutate(Observation_ID = as.factor(row_number()))%>%
+  mutate(experiment_ID_coded = as.factor(paste(paper_ID, experiment_ID, sep="_")),.after=experiment_ID)%>%
+  mutate(group_ID_coded = as.factor(paste(paper_ID, group_ID, sep="_")),.after=group_ID)%>%
+  mutate(repeated_trait_ID_coded = as.factor(paste(paper_ID,group_ID, repeated_trait_ID, sep="_")),.after=repeated_trait_ID)
+
+# random_effects_check<-dataset_analysis%>%select(paper_ID,experiment_ID,group_ID,repeated_trait_ID, experiment_ID_coded,group_ID_coded, repeated_trait_ID_coded)
+
+# write.csv(dataset_analysis,file=here::here("data/input/dataset_analysis.csv"),row.names = FALSE)
+```
+
+## Effect Size Estimation
+
+### Geary's Test
+
+```{r}
+# Assumption of normality assumed to be approximately correct when values are >= 3.
+dataset_analysis<- dataset_analysis %>% 
+         mutate(geary_control = geary(measure_central_tendency_control,
+                                      sd_control, 
+                                      n_control),
+                    geary_trt = geary(measure_central_tendency_experiment,
+                                      sd_experiment, 
+                                      n_experiment),
+                   geary_test = ifelse(geary_control >= 3 & geary_trt >= 3, "pass", "fail"))
+
+# How many fail?
+    geary_res <-dataset_analysis %>% group_by(geary_test) %>% summarise(n = n()) %>%  data.frame()
+    
+    geary_res
+```
+
+88 observations fail Geary's test
+
+### No effect size provided
+
+We will calculate the mean trait values by group (for now I use the mean of both experimental and control group, we can change it later if we want but since I only needed one value, this was good.
+
+```{r}
+# To calculate means by groups
+trait_mean<- dataset_analysis%>%group_by(trait_type)%>%
+  summarise(
+    cumulative_mean = mean (
+      c(measure_central_tendency_experiment,measure_central_tendency_control),
+      na.rm=T
+    ),
+    count = n()
+  )%>%
+  arrange(desc(count))
+
+# Now I need to assign the mean values from this to the missing ES proxies
+dataset_analysis<-dataset_analysis%>%
+  left_join(trait_mean, by= "trait_type")%>%
+  mutate(measure_central_tendency_experiment = if_else((
+    proxy_comment == "use 0 as ES" & !is.na(proxy_comment)),
+    cumulative_mean,
+    measure_central_tendency_experiment),
+    measure_central_tendency_control = if_else((
+    proxy_comment == "use 0 as ES" & !is.na(proxy_comment)),
+    cumulative_mean,
+    measure_central_tendency_control),)%>%
+  select(-cumulative_mean)
+
+
+```
+
+```{r}
+
+# Using missing-cases method approach as suggested by Nakagawa 2022 : Online tutorial - 
+#  https://alistairmcnairsenior.github.io/Miss_SD_Sim/
+
+# First calculate CV on missing data set. Note missing data will be ignored
+    dataset_analysis <- dataset_analysis %>%
+      mutate(cv_Control = na_if(sd_control/measure_central_tendency_control, Inf),
+             cv_Experimental = na_if(sd_experiment/measure_central_tendency_experiment, Inf))
+    
+# Calculate the average between study CV, which will replace missing values.
+    dataset_analysis <- cv_avg(x = measure_central_tendency_experiment, 
+                                sd = sd_experiment,
+                            n = effective_n_experiment, 
+                            group = paper_ID, 
+                            label = "1",
+                             data = dataset_analysis)
+    dataset_analysis <- cv_avg(measure_central_tendency_control, 
+                                sd = sd_control,
+                            n = effective_n_control, 
+                            group = paper_ID, 
+                            label = "2",
+                             data = dataset_analysis)
+
+  
+# Use weighted mean CV in replacement for where CV's are missing. Otherwise, calculate CV^2 of data that is known.
+   dataset_analysis  <- dataset_analysis %>%
+              mutate(cv2_cont_new = if_else(is.na(cv_Control),      b_CV2_2, cv_Control^2),
+                     cv2_expt_new = if_else(is.na(cv_Experimental), b_CV2_1, cv_Experimental^2))
+
+# Now calculate new yi and vi, called lnrr_laj & v_lnrr_laj, respectively. This uses either the between individual CV^2 when missing or normal CV^2 when not missing.
+    dataset_analysis  <- dataset_analysis %>%
+              mutate(lnrr_laj = lnrr_laj(m1 = measure_central_tendency_experiment,
+                                         m2 = measure_central_tendency_control,
+                                         cv1_2 = cv2_expt_new, cv2_2 = cv2_cont_new,
+                                         n1= effective_n_experiment, 
+                                         n2 = effective_n_control),
+                   v_lnrr_laj = v_lnrr_laj(cv1_2 = cv2_expt_new,  
+                                           n1= effective_n_experiment, 
+                                           cv2_2 = cv2_cont_new, 
+                                           n2 = effective_n_control))
+    
+
+# We have added 16 zeros to the dataset
+# 
+# dataset_zeroES<-dataset_analysis %>%
+#   filter(proxy_comment == "use 0 as ES" & !is.na(proxy_comment))
+```
+
+### 
+
+# Calculate lnRR
+
+'escalc()' (with measure=ROM and 'vtype=LS'
+
+Since lnRR can only be calculated for ratio scale data (i.e., data with a true zero; among other assumptions), we will exclude effect sizes with a negative value when calculating lnRR.
+
+```{r for lnRR}
+
+dataset_lnRR<-dataset_analysis
+
+#check what is excluded i.e. flagged or for SMDH only (as of now 22 rows are excluded)
+# excluded_rows<- anti_join(dataset_analysis, dataset_lnRR)
+
+
+# selecting dataset where the values of are negative for mean i.e. not ratio scale data
+dataset_lnRR<-dataset_lnRR%>%
+  filter(measure_central_tendency_experiment>=0 | is.na(measure_central_tendency_experiment))%>%
+  filter(measure_central_tendency_control>=0 | is.na(measure_central_tendency_experiment))
+
+#check what is excluded, 7 values that have a negative mean/SD
+# excluded_rows <- anti_join(dataset_analysis, dataset_lnRR)
+# check GNM_069 telomere dynamic 
+
+
+dataset_lnRR<- escalc(measure = "ROM", 
+              vtype= "LS",
+                        n1i = effective_n_experiment, 
+                        n2i = effective_n_control,
+                        m1i = measure_central_tendency_experiment, 
+                        m2i = measure_central_tendency_control,
+                        sd1i = sd_experiment, 
+                        sd2i = sd_control,
+                        data = dataset_lnRR, 
+                        var.names = c('lnRR',
+                                      'lnRR_variance'),
+                        add.measure = FALSE,
+                        append = TRUE)
+
+
+# I am going to assign the values of missing lnRR and lnRR_variance for the ones where the data was missing but use the one calculated from escalc in all other cases because I am not 100% sure the method of calculation in Nakagawa 2022 function provided. 
+
+# Now I need to assign the mean values from this to the missing ES proxies
+dataset_lnRR<-dataset_lnRR%>%
+  mutate(lnRR = if_else((
+    proxy_comment == "use 0 as ES" & !is.na(proxy_comment)),
+    lnrr_laj,
+    lnRR),
+   lnRR_variance = if_else((
+    proxy_comment == "use 0 as ES" & !is.na(proxy_comment)),
+    v_lnrr_laj,
+    lnRR_variance),)%>%
+  select(-c(v_lnrr_laj,lnrr_laj,cv2_expt_new,cv2_cont_new,b_CV2_2,b_CV2_1,cv_Experimental,cv_Control))
+
+dataset_analysis<-dataset_analysis%>%
+    select(-c(v_lnrr_laj,lnrr_laj,cv2_expt_new,cv2_cont_new,b_CV2_2,b_CV2_1,cv_Experimental,cv_Control))
+
+```
+
+### Sign for Effect Size
+
+-   For both lnRR and SMDH, we will ensure throughout the dataset that positive values mean higher estimates of fitness in the experimental group compared to their control counterparts by multiplying all the effect sizes by their corresponding sign, i.e., by -1 or +1.
+
+```{r correct sign for ES}
+
+dataset_lnRR<-dataset_lnRR%>%
+  mutate(lnRR_sign=lnRR*proxies_sign)
+```
+
+### Outliers Check
+
+We do not plan to exclude any outliers as long as the extracted data is seemingly correct.
+
+Now let's plot means and SD to see everything looks okay
+
+```{r}
+
+## We have to exclude the datapoints where we do not have dispersion value. We have added 0 ES in some cases and this is not allowing the lm line to be plotted
+# 
+temp_data<-dataset_lnRR%>%
+  filter(proxy_comment == "use 0 as ES" & !is.na(proxy_comment))
+dataset_lnRR_plot<-anti_join(dataset_lnRR,temp_data)
+
+ outliers_experiment<- dataset_lnRR %>%
+  filter(measure_dispersion_experiment>100)
+ outliers_control<- dataset_lnRR %>%
+  filter(measure_dispersion_control >100)
+ 
+
+# For experimental group
+ 
+# Fit a linear model to extract the intercept
+lm_fit_experiment <- lm(log(measure_dispersion_experiment) ~ 
+                          log(measure_central_tendency_experiment), 
+                        data = dataset_lnRR_plot)
+intercept_value_experiment <- coef(lm_fit_experiment)[1] # Extract the intercept
+
+lm_fit_control <- lm(log(measure_dispersion_control) ~ 
+                       log(measure_central_tendency_control), 
+                     data = dataset_lnRR_plot)
+intercept_value_control <- coef(lm_fit_control)[1]
+
+# Scatter plot of means vs SDs for experimental group
+dataset_lnRR_plot %>%
+  ggplot(aes(x = log(measure_central_tendency_experiment), 
+             y = log(measure_dispersion_experiment),
+             size = effective_n_experiment,
+             colour = trait_type)) +
+  geom_point(alpha = 0.6) + 
+  geom_text_repel(
+    data = outliers_experiment,
+    aes(
+      x = log(measure_central_tendency_experiment),
+      y = log(measure_dispersion_experiment),
+      label = fitness_proxy_cleaned
+    ),
+    size = 3, color = "black", max.overlaps = 15
+  ) +
+  geom_smooth(
+    method = "lm",  # Adds a regression line
+    se = TRUE,      # Adds confidence intervals
+    color = "blue", # Color of the line
+    linetype = "solid",# Style of the line
+    size = 0.4
+    ) +
+  # Add a line representing correlation of 1
+  geom_abline(
+    slope = 1,       # Slope of the line
+    intercept = intercept_value_experiment,   # Intercept of the line
+    color = "black", # Color of the line
+    linetype = "dashed", # Style of the line
+    size = 0.4       # Thickness of the line
+  )+
+  labs(
+    x = "Log Mean Value",
+    y = "Log Standard Deviation (SD)",
+    title = "Log-transformed Experimental Groups"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(size = 12, face = "bold"),
+    axis.title = element_text(size = 10),
+    axis.text = element_text(size = 10)
+  )
+
+# For Control group
+
+# Scatter plot of means vs SDs for experimental group
+dataset_lnRR_plot %>%
+  ggplot(aes(x = log(measure_central_tendency_control), 
+             y = log(measure_dispersion_control),
+             size = effective_n_control)) +
+  geom_point(color = "brown", alpha = 0.6) + 
+  geom_text_repel(
+    data = outliers_control,
+    aes(
+      x = log(measure_central_tendency_control),
+      y = log(measure_dispersion_control),
+      label = fitness_proxy_cleaned
+    ),
+    size = 3, color = "black", max.overlaps = 15
+  ) +
+  geom_smooth(
+    method = "lm",  # Adds a regression line
+    se = TRUE,      # Adds confidence intervals
+    color = "blue", # Color of the line
+    linetype = "dashed", # Style of the line
+    size= 0.4
+    ) +
+  # Add a line representing correlation of 1
+  geom_abline(
+    slope = 1,       # Slope of the line
+    intercept = intercept_value_control,   # Intercept of the line
+    color = "black", # Color of the line
+    linetype = "dashed", # Style of the line
+    size = 0.4       # Thickness of the line
+  )+
+  labs(
+    x = "Log Mean Value",
+    y = "Log Standard Deviation (SD)",
+    title = "Log-transformed Control Groups"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(size = 12, face = "bold"),
+    axis.title = element_text(size = 10),
+    axis.text = element_text(size = 10),
+    legend.position = "none"
+  )
+
+
+ # ggarrange(sd_experiment_plot,sd_control_plot,
+ #                                      ncol = 2,  nrow = 1,
+ #                                      labels = c("A.", "B.", 
+ #                                                 common.legend = TRUE)) 
+
+ 
+```
+
+```{r Funnel Plot}
+
+
+funnel_lnRR <- dataset_lnRR %>%
+  ggplot(aes(x = lnRR_sign, y = 1 / lnRR_variance)) +
+  geom_point(color= "#7DCE82", alpha = 0.4, size = 3) +
+  geom_vline(xintercept = 0, linetype = "dashed", color = "#8B4513", linewidth=0.65) +  # Add vertical dashed line at x = 0
+  ggtitle("Funnel Plot for lnRR") +
+  xlab("lnRR") +
+  ylab("Precision (1/Variance)")
+
+print(funnel_lnRR)
+
+rows_with_missing <- dataset_lnRR %>%
+  filter(is.na(lnRR_sign) | is.na(lnRR_variance))
+
+
+dataset_lnRR<-dataset_lnRR%>%
+    filter(!is.na(lnRR_sign) & !is.na(lnRR_variance))
+
+write.csv(dataset_lnRR,file=here::here("data/output/dataset_lnRR.csv"),row.names = FALSE)
+```
+
+### Back-transform Pending
+
+# Calculate SMDH
+
+'escalc()' (with measure=SMDH and 'vtype=LS'
+
+-   For results only reported as inferential statistics (e.g., t-test, chi-square), we will use the equations provided by (Lajeunesse 2013; Nakagawa and Cuthill 2007; and other sources if needed) to calculate their corresponding SMD estimates for the analyses.
+
+-   Note that lnRR cannot be calculated from inferential statistics and that only SMD without heteroskedasticity correction can be calculated from inferential statistics.
+
+```{r}
+dataset_SMDH<-dataset_analysis
+
+# selecting dataset which are not flagged
+
+  
+dataset_SMDH<- escalc(measure = "SMD", 
+              vtype= "LS",
+                        n1i = effective_n_experiment, 
+                        n2i = effective_n_control,
+                        m1i = measure_central_tendency_experiment, 
+                        m2i = measure_central_tendency_control,
+                        sd1i = sd_experiment, 
+                        sd2i = sd_control,
+                        data = dataset_SMDH, 
+                        var.names = c('SMDH',
+                                      'SMDH_variance'),
+                        add.measure = FALSE,
+                        append = TRUE)
+
+
+dataset_SMDH <- dataset_SMDH %>%
+  mutate(SMDH = if_else(proxy_comment == "use 0 as ES" & !is.na(proxy_comment), (measure_central_tendency_experiment-measure_central_tendency_control), SMDH))%>%
+  mutate(SMDH_variance = if_else(proxy_comment == "use 0 as ES" & !is.na(proxy_comment), ((effective_n_experiment+effective_n_control)/(effective_n_experiment*effective_n_control)), SMDH_variance))
+
+
+# 4 effect size where SMDH needs to be estimated from test statistics and 9 from GNM_355 where repeated estimates over days for haemoglobin are present and I cannot combine them as I did for chick mass over months.. since the sample is the same and these are the repeated measures of the sample sample.
+x=dataset_SMDH%>%filter(is.na(SMDH))
+
+# For now I am removing the NA values..
+
+dataset_SMDH<-dataset_SMDH%>%filter(!is.na(SMDH))
+```
+
+### Sign for Effect Size
+
+```{r correct sign for ES SMDH}
+
+dataset_SMDH<-dataset_SMDH%>%
+  mutate(SMDH_sign=SMDH*proxies_sign)
+```
+
+```{r}
+write.csv(dataset_SMDH,file=here::here("data/output/dataset_SMDH.csv"),row.names = FALSE)
+```

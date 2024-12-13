@@ -1,0 +1,17 @@
+# What is this? {.unnumbered}
+
+Data analysis are a complex thing.. often hard to reproduce. This is a website/book (depending on how you are viewing it currently) trying to walk you through the million little things that were done to generate results for this meta-analysis. Hopefully it will help increase transparency for anyone trying to understand what was done.. and if not, well, I am doing my bit to generate more data in this massive sea of information that is drowning us. You be the judge of what is useful and what is not.
+
+This meta-analysis was pre-registered on OSF and you can find more details about it here:
+
+> Dimri, S., Rizvi, T., Segovia, J. D. M. G. D., & Sanchez-Tojar, A. (2024). The adaptive value of green nest material across birds: A systematic review and meta-analysis. <https://doi.org/10.17605/OSF.IO/S7J6Z>
+
+## Contact
+
+If you have any questions or find any mistakes or bugs to report, please contact:
+
+Shreya Dimri\
+Department of Evolutionary Biology,\
+Univeristy of Bielefeld, Bielefeld, Germany\
+Email: shreya.dimri\@uni-bielefeld.de[\
+]{.underline}Github: <https://github.com/shreyadimri>

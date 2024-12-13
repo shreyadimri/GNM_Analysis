@@ -1,0 +1,2004 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.5.57">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>2&nbsp; Data Cleaning – Green Nest Material Meta-Analysis</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./intro.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<link href="site_libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet">
+<script src="site_libs/pagedtable-1.1/js/pagedtable.js"></script>
+
+
+</head>
+
+<body class="nav-sidebar floating">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./data_cleaning.html"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Data Cleaning</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Green Nest Material Meta-Analysis</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">What is this?</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">About the project</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./data_cleaning.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Data Cleaning</span></span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+    <nav id="TOC" role="doc-toc" class="toc-active" data-toc-expanded="3">
+    <h2 id="toc-title">Table of Contents</h2>
+   
+  <ul class="collapse">
+  <li><a href="#about-the-data" id="toc-about-the-data" class="nav-link active" data-scroll-target="#about-the-data"><span class="header-section-number">2.1</span> About the data</a></li>
+  <li><a href="#proxies-of-fitness" id="toc-proxies-of-fitness" class="nav-link" data-scroll-target="#proxies-of-fitness"><span class="header-section-number">2.2</span> Proxies of fitness</a></li>
+  <li><a href="#we-excluded-some-proxies-from-our-dataset" id="toc-we-excluded-some-proxies-from-our-dataset" class="nav-link" data-scroll-target="#we-excluded-some-proxies-from-our-dataset"><span class="header-section-number">2.4</span> We excluded some proxies from our dataset</a></li>
+  </ul>
+</nav>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Data Cleaning</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="setting-up-the-space" class="level4" data-number="2.0.0.1">
+<h4 data-number="2.0.0.1" class="anchored" data-anchor-id="setting-up-the-space"><span class="header-section-number">2.0.0.1</span> Setting up the space</h4>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># If you do not have pacman package, please install it using:</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="co"># install.packages("packman")</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(here,dplyr, readxl, tidyverse, stringr, knitr)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co">#Packages needed for cleaning the data..</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list=</span><span class="fu">ls</span>()) <span class="do">## clearing up any previously present variables</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="about-the-data" class="level2" data-number="2.1">
+<h2 data-number="2.1" class="anchored" data-anchor-id="about-the-data"><span class="header-section-number">2.1</span> About the data</h2>
+<p>After conducting the title and abstract screening, we were left with 40 articles included in our dataset. We conducted full-text screening and data extraction together. We excluded studies that did not meet our inclusion criteria and if a study was included, we proceeded with data extraction. The 40 articles were randomly divided between SD, TR and JMGS. Later, on 12th August 2024, we repeated our search and performed abstract and title screening, we found 2 additional articles.</p>
+<p>To summarise..</p>
+<ul>
+<li><p>We had 40 papers after abstract and title screening</p></li>
+<li><p>We found <strong>2</strong> <strong>papers</strong> from from repeating the search on 12th August 2024</p></li>
+<li><p>We found <strong>1 paper</strong> from other source (from Meinolf’s poster)</p></li>
+<li><p>We got access to <strong>2 Unpublished datasets (</strong>One was provided by Meinolf on buzzards and another was a Master Thesis project from Adele Menerate’s students)</p></li>
+</ul>
+<p><strong>Importing files after data extraction</strong></p>
+<p>You can. find all the data that is needed for this analysis.. in a folder called <strong>input</strong>. In short, we need the following files to run the data cleaning:</p>
+<ul>
+<li><p>data_extraction_setJMGS_checkedSD.xlsx</p></li>
+<li><p>data_extraction_setSD_checkedTR.xlsx</p></li>
+<li><p>data_extraction_setTR_checkedJS_checkedSD.xlsx</p></li>
+<li><p>data_extraction_repeat_search_JMGS.xlsx</p></li>
+<li><p>data_extraction_repeat_search_SD.xlsx</p></li>
+<li><p>data_extraction_repeat_search_TR.xlsx</p></li>
+<li><p>data_extraction_MO_checkedSD.xlsx</p></li>
+<li><p>data_extraction_UnpublishedThesis.xlsx</p></li>
+</ul>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="do">## We use column_types to make the loading variable datatype of all the datafiles same.</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>column_types<span class="ot">=</span> <span class="fu">c</span>(<span class="st">"text"</span>, <span class="st">"text"</span>, <span class="st">"text"</span>,<span class="st">"text"</span>, <span class="st">"text"</span>, <span class="st">"text"</span>, <span class="st">"text"</span>, </span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>                <span class="st">"numeric"</span>, <span class="st">"numeric"</span>, <span class="st">"numeric"</span>,</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>                <span class="st">"text"</span>, <span class="st">"text"</span>,<span class="st">"text"</span>, </span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>                <span class="st">"numeric"</span>, <span class="st">"numeric"</span>, <span class="st">"numeric"</span>,</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>       <span class="st">"numeric"</span>, <span class="st">"text"</span>, <span class="st">"numeric"</span>,<span class="st">"text"</span>, <span class="st">"numeric"</span>, </span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>       <span class="st">"numeric"</span>, <span class="st">"text"</span>,<span class="st">"numeric"</span>, <span class="st">"text"</span>, <span class="st">"numeric"</span>, </span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>       <span class="st">"text"</span>, <span class="st">"text"</span>, <span class="st">"text"</span>, <span class="st">"text"</span>, <span class="st">"text"</span>, <span class="st">"numeric"</span>,</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>       <span class="st">"text"</span>, <span class="st">"text"</span>, <span class="st">"text"</span>, <span class="st">"text"</span>, <span class="st">"text"</span>, <span class="st">"text"</span>,<span class="st">"text"</span>, <span class="st">"text"</span>, <span class="st">"text"</span>, <span class="st">"text"</span>, <span class="st">"text"</span>, <span class="st">"text"</span>, <span class="st">"text"</span>, <span class="st">"text"</span>,<span class="st">"text"</span>, <span class="st">"text"</span>,</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>       <span class="st">"numeric"</span>,<span class="st">"numeric"</span>)</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Data extracted from the selected papers after abstract screening</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>set_JMGS <span class="ot">&lt;-</span> <span class="fu">read_excel</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"data/input/data_extraction_setJMGS_checkedSD.xlsx"</span>),<span class="at">col_types =</span>column_types)</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>set_SD <span class="ot">&lt;-</span> <span class="fu">read_excel</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"data/input/data_extraction_setSD_checkedTR.xlsx"</span>),<span class="at">col_types =</span>column_types)</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>set_TR <span class="ot">&lt;-</span> <span class="fu">read_excel</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"data/input/data_extraction_setTR_checkedJS_checkedSD.xlsx"</span>),<span class="at">col_types =</span>column_types)</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Data extracted from repeated search on 12.Aug.2024</span></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>set2_JMGS <span class="ot">&lt;-</span> <span class="fu">read_excel</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"data/input/data_extraction_repeat_search_JMGS.xlsx"</span>),<span class="at">col_types =</span>column_types)</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>set2_SD <span class="ot">&lt;-</span> <span class="fu">read_excel</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"data/input/data_extraction_repeat_search_SD.xlsx"</span>),<span class="at">col_types =</span>column_types)</span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>set2_TR <span class="ot">&lt;-</span> <span class="fu">read_excel</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"data/input/data_extraction_repeat_search_TR.xlsx"</span>),<span class="at">col_types =</span>column_types)</span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a><span class="co"># Unpublished dataset</span></span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>set_unpublished1 <span class="ot">&lt;-</span> <span class="fu">read_excel</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"data/input/data_extraction_MO_checkedSD.xlsx"</span>),<span class="at">col_types =</span>column_types)</span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>set_unpublished2 <span class="ot">&lt;-</span><span class="fu">read_excel</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"data/input/data_extraction_UnpublishedThesis.xlsx"</span>),<span class="at">col_types =</span>column_types)</span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a><span class="co"># Merge all datasets</span></span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>merged_data_extraction<span class="ot">&lt;-</span><span class="fu">full_join</span>(set_JMGS,set_SD)<span class="sc">%&gt;%</span><span class="fu">full_join</span>(set_TR)<span class="sc">%&gt;%</span><span class="fu">full_join</span>(set2_JMGS)<span class="sc">%&gt;%</span><span class="fu">full_join</span>(set2_SD)<span class="sc">%&gt;%</span><span class="fu">full_join</span>(set2_TR)<span class="sc">%&gt;%</span><span class="fu">full_join</span>(set_unpublished1)<span class="sc">%&gt;%</span><span class="fu">full_join</span>(set_unpublished2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p><strong>Excluded articles</strong></p>
+<p>Number of studies that were excluded from out data extraction process: 16 .</p>
+<div class="cell">
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<caption>Reasons for exclusion</caption>
+<colgroup>
+<col style="width: 65%">
+<col style="width: 34%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: right;">Number of studies excluded</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Green nest material is not the independent variable</td>
+<td style="text-align: right;">6</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">No fitness proxy measured</td>
+<td style="text-align: right;">7</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Not empirical</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Not experimental</td>
+<td style="text-align: right;">2</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><strong>Included articles</strong></p>
+<p>Number of studies that are included in our meta-analysis so far: 29</p>
+</section>
+<section id="proxies-of-fitness" class="level2" data-number="2.2">
+<h2 data-number="2.2" class="anchored" data-anchor-id="proxies-of-fitness"><span class="header-section-number">2.2</span> Proxies of fitness</h2>
+<p>We extracted the names of the variables that the authors measured as it is. We will now clean them a bit, making sure they are all named correctly. We are cleaning some of the names of the fitness proxy and storing them in the new variable called <em>fitness_proxy_cleaned</em></p>
+<section id="un-categorized-variables" class="level3" data-number="2.2.1">
+<h3 data-number="2.2.1" class="anchored" data-anchor-id="un-categorized-variables"><span class="header-section-number">2.2.1</span> Un-categorized variables</h3>
+<section id="number-of-nestlings-different-age" class="level4" data-number="2.2.1.1">
+<h4 data-number="2.2.1.1" class="anchored" data-anchor-id="number-of-nestlings-different-age"><span class="header-section-number">2.2.1.1</span> 1. <strong>Number of nestlings</strong> (different age)</h4>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>dataset_after_cleaning <span class="ot">&lt;-</span> dataset_after_cleaning <span class="sc">%&gt;%</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mutate</span>(<span class="at">fitness_proxy_cleaned =</span> <span class="fu">case_when</span>(</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_detect</span>(fitness_proxy, <span class="fu">regex</span>(<span class="st">"number of nestling"</span>, </span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>                                    <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) <span class="sc">~</span> <span class="st">"number_of_nestling"</span>,</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_detect</span>(fitness_proxy, <span class="fu">regex</span>(<span class="st">"Number of hatchlings"</span>, </span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>                                    <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) <span class="sc">~</span> <span class="st">"number_of_nestling"</span>,</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_detect</span>(fitness_proxy, <span class="fu">regex</span>(<span class="st">"broodsize"</span>, </span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>                                    <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) <span class="sc">~</span> <span class="st">"number_of_nestling"</span>,  </span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_detect</span>(fitness_proxy, <span class="fu">regex</span>(<span class="st">"brood size"</span>, </span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>                                    <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) <span class="sc">~</span> <span class="st">"number_of_nestling"</span>,</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_detect</span>(fitness_proxy, <span class="fu">regex</span>(<span class="st">"number of eggs hatched"</span>, </span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>                                    <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) <span class="sc">~</span> <span class="st">"number_of_nestling"</span>,</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_detect</span>(fitness_proxy, <span class="fu">regex</span>(<span class="st">"maxchicks*"</span>, </span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>                                    <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) <span class="sc">~</span> <span class="st">"number_of_nestling"</span>,</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>    <span class="cn">TRUE</span> <span class="sc">~</span> <span class="fu">as.character</span>(fitness_proxy_cleaned)  </span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Keeps existing values for all other cases</span></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>  ))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="number-of-fledglings" class="level4" data-number="2.2.1.2">
+<h4 data-number="2.2.1.2" class="anchored" data-anchor-id="number-of-fledglings"><span class="header-section-number">2.2.1.2</span> 2. <strong>Number of fledglings</strong></h4>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>dataset_after_cleaning <span class="ot">&lt;-</span> dataset_after_cleaning <span class="sc">%&gt;%</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mutate</span>(<span class="at">fitness_proxy_cleaned =</span> <span class="fu">case_when</span>(</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_detect</span>(fitness_proxy, <span class="fu">regex</span>(<span class="st">"number of fled"</span>, </span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>                                    <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) <span class="sc">~</span> <span class="st">"number_of_fledgling"</span>,</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_detect</span>(fitness_proxy, <span class="fu">regex</span>(<span class="st">"number fled"</span>, </span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>                                    <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) <span class="sc">~</span> <span class="st">"number_of_fledgling"</span>,</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    <span class="cn">TRUE</span> <span class="sc">~</span> <span class="fu">as.character</span>(fitness_proxy_cleaned)  </span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Keeps existing values for all other cases</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>  ))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="chick-mass-nestling-mass-and-fledgling-mass" class="level4" data-number="2.2.1.3">
+<h4 data-number="2.2.1.3" class="anchored" data-anchor-id="chick-mass-nestling-mass-and-fledgling-mass"><span class="header-section-number">2.2.1.3</span> 3. <strong>Chick mass, nestling mass and fledgling mass</strong></h4>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Checked paper GNM_069 and GNM_349 and the word body mass is used to describe nestlings of 14 days and 17 days respectlively</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>dataset_after_cleaning <span class="ot">&lt;-</span> dataset_after_cleaning <span class="sc">%&gt;%</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="fu">mutate</span>(<span class="at">fitness_proxy_cleaned =</span> <span class="fu">case_when</span>(</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_detect</span>(fitness_proxy, <span class="fu">regex</span>(<span class="st">"chick mass*"</span>, <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) <span class="sc">~</span> <span class="st">"chick_mass"</span>,</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_detect</span>(fitness_proxy, <span class="fu">regex</span>(<span class="st">"chick body mass"</span>, <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) <span class="sc">~</span> <span class="st">"chick_mass"</span>,</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>     <span class="fu">str_detect</span>(fitness_proxy, <span class="fu">regex</span>(<span class="st">"chickmass"</span>, <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) <span class="sc">~</span> <span class="st">"chick_mass"</span>,</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_detect</span>(fitness_proxy, <span class="fu">regex</span>(<span class="st">"fledgling mass"</span>, <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) <span class="sc">~</span> <span class="st">"fledgeling_mass"</span>,</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_detect</span>(fitness_proxy, <span class="fu">regex</span>(<span class="st">"fledgling body mass"</span>, <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) <span class="sc">~</span> <span class="st">"fledgeling_mass"</span>,<span class="fu">str_detect</span>(fitness_proxy, <span class="fu">regex</span>(<span class="st">"nestling mass"</span>, <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) <span class="sc">~</span> <span class="st">"nestling_mass"</span>,</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_detect</span>(fitness_proxy, <span class="fu">regex</span>(<span class="st">"nestlings mass"</span>, <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) <span class="sc">~</span> <span class="st">"nestling_mass"</span>,</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_detect</span>(fitness_proxy, <span class="fu">regex</span>(<span class="st">"nestling weight"</span>, <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) <span class="sc">~</span> <span class="st">"nestling_mass"</span>,    <span class="fu">str_detect</span>(fitness_proxy, <span class="fu">regex</span>(<span class="st">"body mass"</span>, <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) <span class="sc">~</span> <span class="st">"nestling_mass"</span>,</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>    <span class="cn">TRUE</span> <span class="sc">~</span> <span class="fu">as.character</span>(fitness_proxy_cleaned)  </span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Keeps existing values for all other cases</span></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>  ))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="nestling-survival-rate" class="level4" data-number="2.2.1.4">
+<h4 data-number="2.2.1.4" class="anchored" data-anchor-id="nestling-survival-rate"><span class="header-section-number">2.2.1.4</span> 4. <strong>Nestling survival rate</strong></h4>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>dataset_after_cleaning <span class="ot">&lt;-</span> dataset_after_cleaning <span class="sc">%&gt;%</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mutate</span>(<span class="at">fitness_proxy_cleaned =</span> <span class="fu">case_when</span>(</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_detect</span>(fitness_proxy, <span class="fu">regex</span>(<span class="st">"nestling survival rate"</span>, </span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>                                    <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) <span class="sc">~</span> <span class="st">"survival_rate_nestling"</span>, </span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    <span class="cn">TRUE</span> <span class="sc">~</span> <span class="fu">as.character</span>(fitness_proxy_cleaned)  </span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Keeps existing values for all other cases</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>  ))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="recruitment-probability" class="level4" data-number="2.2.1.5">
+<h4 data-number="2.2.1.5" class="anchored" data-anchor-id="recruitment-probability"><span class="header-section-number">2.2.1.5</span> <strong>5. Recruitment probability</strong></h4>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>dataset_after_cleaning <span class="ot">&lt;-</span> dataset_after_cleaning <span class="sc">%&gt;%</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mutate</span>(<span class="at">fitness_proxy_cleaned =</span> <span class="fu">case_when</span>(</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>   <span class="fu">str_detect</span>(fitness_proxy, <span class="fu">regex</span>(<span class="st">"probability of local recruitment"</span> , </span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) <span class="sc">~</span> <span class="st">"local_recruitment_probability"</span>,</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    <span class="cn">TRUE</span> <span class="sc">~</span> <span class="fu">as.character</span>(fitness_proxy_cleaned)  </span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>   <span class="co"># Keeps existing values for all other cases</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>  ))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="hatching-success" class="level4" data-number="2.2.1.6">
+<h4 data-number="2.2.1.6" class="anchored" data-anchor-id="hatching-success"><span class="header-section-number">2.2.1.6</span> 6. <strong>Hatching success</strong></h4>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>dataset_after_cleaning <span class="ot">&lt;-</span> dataset_after_cleaning <span class="sc">%&gt;%</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mutate</span>(<span class="at">fitness_proxy_cleaned =</span> <span class="fu">case_when</span>(</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>   <span class="fu">str_detect</span>(fitness_proxy, <span class="fu">regex</span>(<span class="st">"hatching success*"</span> , </span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) <span class="sc">~</span> <span class="st">"hatching_success"</span>,</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>   <span class="fu">str_detect</span>(fitness_proxy, <span class="fu">regex</span>(<span class="st">"hatch success*"</span> , </span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) <span class="sc">~</span> <span class="st">"hatching_success"</span>,</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    <span class="cn">TRUE</span> <span class="sc">~</span> <span class="fu">as.character</span>(fitness_proxy_cleaned)  </span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>   <span class="co"># Keeps existing values for all other cases</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>  ))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="fledgling-success" class="level4" data-number="2.2.1.7">
+<h4 data-number="2.2.1.7" class="anchored" data-anchor-id="fledgling-success"><span class="header-section-number">2.2.1.7</span> 7. <strong>Fledgling success</strong></h4>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>dataset_after_cleaning <span class="ot">&lt;-</span> dataset_after_cleaning <span class="sc">%&gt;%</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mutate</span>(<span class="at">fitness_proxy_cleaned =</span> <span class="fu">case_when</span>(</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>   <span class="fu">str_detect</span>(fitness_proxy, <span class="fu">regex</span>(<span class="st">"fledging success*"</span> , </span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) <span class="sc">~</span> <span class="st">"fledgling_success"</span>,</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>   <span class="fu">str_detect</span>(fitness_proxy, <span class="fu">regex</span>(<span class="st">"fledge success*"</span> , </span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) <span class="sc">~</span> <span class="st">"fledgling_success"</span>,</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>    <span class="cn">TRUE</span> <span class="sc">~</span> <span class="fu">as.character</span>(fitness_proxy_cleaned)  </span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>   <span class="co"># Keeps existing values for all other cases</span></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>  ))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="reproductive-success" class="level4" data-number="2.2.1.8">
+<h4 data-number="2.2.1.8" class="anchored" data-anchor-id="reproductive-success"><span class="header-section-number">2.2.1.8</span> 7. <strong>Reproductive success</strong></h4>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>dataset_after_cleaning <span class="ot">&lt;-</span> dataset_after_cleaning <span class="sc">%&gt;%</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mutate</span>(<span class="at">fitness_proxy_cleaned =</span> <span class="fu">case_when</span>(</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>   <span class="fu">str_detect</span>(fitness_proxy, <span class="fu">regex</span>(<span class="st">"reproductive success"</span> , </span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) <span class="sc">~</span> <span class="st">"reproductive_success"</span>,</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>    <span class="cn">TRUE</span> <span class="sc">~</span> <span class="fu">as.character</span>(fitness_proxy_cleaned)  </span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>   <span class="co"># Keeps existing values for all other cases</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>  ))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="nest-mortality" class="level4" data-number="2.2.1.9">
+<h4 data-number="2.2.1.9" class="anchored" data-anchor-id="nest-mortality"><span class="header-section-number">2.2.1.9</span> 8. <strong>Nest mortality</strong></h4>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>dataset_after_cleaning <span class="ot">&lt;-</span> dataset_after_cleaning <span class="sc">%&gt;%</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mutate</span>(<span class="at">fitness_proxy_cleaned =</span> <span class="fu">case_when</span>(</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>   <span class="fu">str_detect</span>(fitness_proxy, <span class="fu">regex</span>(<span class="st">"Nest mortality"</span> , </span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) <span class="sc">~</span> <span class="st">"nest_mortality"</span>,</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>    <span class="cn">TRUE</span> <span class="sc">~</span> <span class="fu">as.character</span>(fitness_proxy_cleaned)  </span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>   <span class="co"># Keeps existing values for all other cases</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>  ))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="male-and-female-dispersal-distance" class="level4" data-number="2.2.1.10">
+<h4 data-number="2.2.1.10" class="anchored" data-anchor-id="male-and-female-dispersal-distance"><span class="header-section-number">2.2.1.10</span> 9. <strong>Male and female dispersal distance</strong></h4>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>dataset_after_cleaning <span class="ot">&lt;-</span> dataset_after_cleaning <span class="sc">%&gt;%</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mutate</span>(<span class="at">fitness_proxy_cleaned =</span> <span class="fu">case_when</span>(</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_detect</span>(fitness_proxy, <span class="fu">regex</span>(<span class="st">"dispersal distance (meters) males*"</span>, <span class="at">ignore_case =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    <span class="sc">~</span> <span class="st">"dispersal_distance_males"</span>,    </span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_detect</span>(fitness_proxy, <span class="fu">regex</span>(<span class="st">"dispersal distance (meters) females*"</span>, <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) </span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>    <span class="sc">~</span> <span class="st">"dispersal_distance_females"</span>,</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>    <span class="cn">TRUE</span> <span class="sc">~</span> <span class="fu">as.character</span>(fitness_proxy_cleaned)  <span class="co"># Keeps existing values for all other cases</span></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>  ))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="mouth-colouration" class="level4" data-number="2.2.1.11">
+<h4 data-number="2.2.1.11" class="anchored" data-anchor-id="mouth-colouration"><span class="header-section-number">2.2.1.11</span> 10. Mouth colouration</h4>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>dataset_after_cleaning <span class="ot">&lt;-</span> dataset_after_cleaning <span class="sc">%&gt;%</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mutate</span>(<span class="at">fitness_proxy_cleaned =</span> <span class="fu">case_when</span>(</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>   <span class="fu">str_detect</span>(fitness_proxy, <span class="fu">regex</span>(<span class="st">"brightness"</span> , </span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) <span class="sc">~</span> </span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>     <span class="st">"mouth_colouration"</span>,</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>   <span class="fu">str_detect</span>(fitness_proxy, <span class="fu">regex</span>(<span class="st">"hue"</span> , </span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) <span class="sc">~</span> </span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>     <span class="st">"mouth_colouration"</span>,</span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_detect</span>(fitness_proxy, <span class="fu">regex</span>(<span class="st">"saturation"</span> , </span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) <span class="sc">~</span> </span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>     <span class="st">"mouth_colouration"</span>,</span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>    <span class="cn">TRUE</span> <span class="sc">~</span> <span class="fu">as.character</span>(fitness_proxy_cleaned)  </span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>   <span class="co"># Keeps existing values for all other cases</span></span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>  ))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+</section>
+<section id="for-variables-that-fit-courtship-hypothesis" class="level3" data-number="2.2.2">
+<h3 data-number="2.2.2" class="anchored" data-anchor-id="for-variables-that-fit-courtship-hypothesis"><span class="header-section-number">2.2.2</span> For variables that fit courtship hypothesis</h3>
+<section id="male-and-female-proportion-of-visit" class="level4" data-number="2.2.2.1">
+<h4 data-number="2.2.2.1" class="anchored" data-anchor-id="male-and-female-proportion-of-visit"><span class="header-section-number">2.2.2.1</span> <strong>1. Male and female proportion of visit</strong></h4>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>dataset_after_cleaning <span class="ot">&lt;-</span> dataset_after_cleaning <span class="sc">%&gt;%</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mutate</span>(<span class="at">fitness_proxy_cleaned =</span> <span class="fu">case_when</span>(</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>   <span class="fu">str_detect</span>(fitness_proxy, <span class="fu">regex</span>(<span class="st">"male proportions of visit"</span> , </span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) <span class="sc">~</span> </span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>     <span class="st">"male_visit"</span>,</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>   <span class="fu">str_detect</span>(fitness_proxy, <span class="fu">regex</span>(<span class="st">"female proportions of visit"</span> , </span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) <span class="sc">~</span> </span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>     <span class="st">"female_visit"</span>,</span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>    <span class="cn">TRUE</span> <span class="sc">~</span> <span class="fu">as.character</span>(fitness_proxy_cleaned)  </span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>   <span class="co"># Keeps existing values for all other cases</span></span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>  ))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="male-and-female-provisioning" class="level4" data-number="2.2.2.2">
+<h4 data-number="2.2.2.2" class="anchored" data-anchor-id="male-and-female-provisioning"><span class="header-section-number">2.2.2.2</span> <strong>2. Male and female provisioning</strong></h4>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>dataset_after_cleaning <span class="ot">&lt;-</span> dataset_after_cleaning <span class="sc">%&gt;%</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mutate</span>(<span class="at">fitness_proxy_cleaned =</span> <span class="fu">case_when</span>(</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>     <span class="fu">str_detect</span>(fitness_proxy, <span class="fu">regex</span>(<span class="st">"female provisioning rate"</span> , </span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) <span class="sc">~</span> </span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>     <span class="st">"female_provisioning_rate"</span>,</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>   <span class="fu">str_detect</span>(fitness_proxy, <span class="fu">regex</span>(<span class="st">"male provisioning rate"</span> , </span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) <span class="sc">~</span> </span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>     <span class="st">"male_provisioning_rate"</span>,</span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>    <span class="cn">TRUE</span> <span class="sc">~</span> <span class="fu">as.character</span>(fitness_proxy_cleaned)  </span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>   <span class="co"># Keeps existing values for all other cases</span></span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>  ))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="male-food-provisioning" class="level4" data-number="2.2.2.3">
+<h4 data-number="2.2.2.3" class="anchored" data-anchor-id="male-food-provisioning"><span class="header-section-number">2.2.2.3</span> 3. <strong>Male food provisioning</strong></h4>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>dataset_after_cleaning <span class="ot">&lt;-</span> dataset_after_cleaning <span class="sc">%&gt;%</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mutate</span>(<span class="at">fitness_proxy_cleaned =</span> <span class="fu">case_when</span>(</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>   <span class="fu">str_detect</span>(fitness_proxy, <span class="fu">regex</span>(<span class="st">"male food provisioning*"</span> , </span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) <span class="sc">~</span> </span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>     <span class="st">"male_provisioning"</span>,</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>    <span class="cn">TRUE</span> <span class="sc">~</span> <span class="fu">as.character</span>(fitness_proxy_cleaned)  </span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>   <span class="co"># Keeps existing values for all other cases</span></span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>  ))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="male-incubation-attendance" class="level4" data-number="2.2.2.4">
+<h4 data-number="2.2.2.4" class="anchored" data-anchor-id="male-incubation-attendance"><span class="header-section-number">2.2.2.4</span> 4. <strong>Male incubation attendance</strong></h4>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>dataset_after_cleaning <span class="ot">&lt;-</span> dataset_after_cleaning <span class="sc">%&gt;%</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mutate</span>(<span class="at">fitness_proxy_cleaned =</span> <span class="fu">case_when</span>(</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>   <span class="fu">str_detect</span>(fitness_proxy, <span class="fu">regex</span>(<span class="st">"male incubation attendance*"</span> , </span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) <span class="sc">~</span> </span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>     <span class="st">"male_incubation_attendance"</span>,</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>    <span class="cn">TRUE</span> <span class="sc">~</span> <span class="fu">as.character</span>(fitness_proxy_cleaned)  </span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>   <span class="co"># Keeps existing values for all other cases</span></span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>  ))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="male-risk-taking" class="level4" data-number="2.2.2.5">
+<h4 data-number="2.2.2.5" class="anchored" data-anchor-id="male-risk-taking"><span class="header-section-number">2.2.2.5</span> 5. <strong>Male Risk Taking</strong></h4>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>dataset_after_cleaning <span class="ot">&lt;-</span> dataset_after_cleaning <span class="sc">%&gt;%</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mutate</span>(<span class="at">fitness_proxy_cleaned =</span> <span class="fu">case_when</span>(</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>   <span class="fu">str_detect</span>(fitness_proxy, <span class="fu">regex</span>(<span class="st">"male risk*"</span> , </span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) <span class="sc">~</span> </span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>     <span class="st">"male_risk_taking"</span>,</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>    <span class="cn">TRUE</span> <span class="sc">~</span> <span class="fu">as.character</span>(fitness_proxy_cleaned)  </span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>   <span class="co"># Keeps existing values for all other cases</span></span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>  ))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="female-testosterone" class="level4" data-number="2.2.2.6">
+<h4 data-number="2.2.2.6" class="anchored" data-anchor-id="female-testosterone"><span class="header-section-number">2.2.2.6</span> 6. <strong>Female Testosterone</strong></h4>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>dataset_after_cleaning <span class="ot">&lt;-</span> dataset_after_cleaning <span class="sc">%&gt;%</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mutate</span>(<span class="at">fitness_proxy_cleaned =</span> <span class="fu">case_when</span>(</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>   <span class="fu">str_detect</span>(fitness_proxy, <span class="fu">regex</span>(<span class="st">"females' testosterone level*"</span> , </span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) <span class="sc">~</span> </span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>     <span class="st">"females_testosterone"</span>,</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>   <span class="fu">str_detect</span>(fitness_proxy, <span class="fu">regex</span>(<span class="st">"testosterone level*"</span> , </span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) <span class="sc">~</span> </span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>     <span class="st">"females_testosterone"</span>,</span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>    <span class="cn">TRUE</span> <span class="sc">~</span> <span class="fu">as.character</span>(fitness_proxy_cleaned)  </span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>   <span class="co"># Keeps existing values for all other cases</span></span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>  ))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="courtship-time" class="level4" data-number="2.2.2.7">
+<h4 data-number="2.2.2.7" class="anchored" data-anchor-id="courtship-time"><span class="header-section-number">2.2.2.7</span> 7. <strong>Courtship Time</strong></h4>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>dataset_after_cleaning <span class="ot">&lt;-</span> dataset_after_cleaning <span class="sc">%&gt;%</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mutate</span>(<span class="at">fitness_proxy_cleaned =</span> <span class="fu">case_when</span>(</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>   <span class="fu">str_detect</span>(fitness_proxy, <span class="fu">regex</span>(<span class="st">"courtship time*"</span> , </span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) <span class="sc">~</span> </span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>     <span class="st">"courtship_time"</span>,</span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>    <span class="cn">TRUE</span> <span class="sc">~</span> <span class="fu">as.character</span>(fitness_proxy_cleaned)  </span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>   <span class="co"># Keeps existing values for all other cases</span></span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>  ))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="clutch-size" class="level4" data-number="2.2.2.8">
+<h4 data-number="2.2.2.8" class="anchored" data-anchor-id="clutch-size"><span class="header-section-number">2.2.2.8</span> 8. <strong>Clutch size</strong></h4>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>dataset_after_cleaning <span class="ot">&lt;-</span> dataset_after_cleaning <span class="sc">%&gt;%</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mutate</span>(<span class="at">fitness_proxy_cleaned =</span> <span class="fu">case_when</span>(</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_detect</span>(fitness_proxy, <span class="fu">regex</span>(<span class="st">"clutch size"</span>, </span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>                                    <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) <span class="sc">~</span> <span class="st">"clutch_size"</span>,</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_detect</span>(fitness_proxy, <span class="fu">regex</span>(<span class="st">"clutch-size"</span>, </span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>                                    <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) <span class="sc">~</span> <span class="st">"clutch_size"</span>,</span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>     <span class="fu">str_detect</span>(fitness_proxy, <span class="fu">regex</span>(<span class="st">"eggslaid"</span>, </span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>                                     <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) <span class="sc">~</span> <span class="st">"clutch_size"</span>,</span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_detect</span>(fitness_proxy, <span class="fu">regex</span>(<span class="st">"Number of eggs"</span>, </span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>                                     <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) <span class="sc">~</span> <span class="st">"clutch_size"</span>,</span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>    <span class="cn">TRUE</span> <span class="sc">~</span> <span class="fu">as.character</span>(fitness_proxy_cleaned)  </span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Keeps existing values for all other cases</span></span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>  ))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="egg-size" class="level4" data-number="2.2.2.9">
+<h4 data-number="2.2.2.9" class="anchored" data-anchor-id="egg-size"><span class="header-section-number">2.2.2.9</span> 10. <strong>Egg Size</strong></h4>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>dataset_after_cleaning <span class="ot">&lt;-</span> dataset_after_cleaning <span class="sc">%&gt;%</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mutate</span>(<span class="at">fitness_proxy_cleaned =</span> <span class="fu">case_when</span>(</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>   <span class="fu">str_detect</span>(fitness_proxy, <span class="fu">regex</span>(<span class="st">"egg size*"</span> , </span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) <span class="sc">~</span> </span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>     <span class="st">"egg_size"</span>,</span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>    <span class="cn">TRUE</span> <span class="sc">~</span> <span class="fu">as.character</span>(fitness_proxy_cleaned)  </span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>   <span class="co"># Keeps existing values for all other cases</span></span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>  ))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="laying-date" class="level4" data-number="2.2.2.10">
+<h4 data-number="2.2.2.10" class="anchored" data-anchor-id="laying-date"><span class="header-section-number">2.2.2.10</span> 11. <strong>Laying Date</strong></h4>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>dataset_after_cleaning <span class="ot">&lt;-</span> dataset_after_cleaning <span class="sc">%&gt;%</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mutate</span>(<span class="at">fitness_proxy_cleaned =</span> <span class="fu">case_when</span>(</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_detect</span>(fitness_proxy, <span class="fu">regex</span>(<span class="st">"laying date"</span>, <span class="at">ignore_case =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>    <span class="sc">~</span> <span class="st">"laying_date"</span>,    </span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_detect</span>(fitness_proxy, <span class="fu">regex</span>(<span class="st">"clutch initiation date"</span>, <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) </span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>    <span class="sc">~</span> <span class="st">"laying_date"</span>,</span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_detect</span>(fitness_proxy, <span class="fu">regex</span>(<span class="st">"Onset of Laying"</span>, <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) </span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>    <span class="sc">~</span> <span class="st">"laying_date"</span>,</span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>    <span class="cn">TRUE</span> <span class="sc">~</span> <span class="fu">as.character</span>(fitness_proxy_cleaned)  <span class="co"># Keeps existing values for all other cases</span></span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>  ))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="hatching-date" class="level4" data-number="2.2.2.11">
+<h4 data-number="2.2.2.11" class="anchored" data-anchor-id="hatching-date"><span class="header-section-number">2.2.2.11</span> 12. <strong>Hatching Date</strong></h4>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>dataset_after_cleaning <span class="ot">&lt;-</span> dataset_after_cleaning <span class="sc">%&gt;%</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mutate</span>(<span class="at">fitness_proxy_cleaned =</span> <span class="fu">case_when</span>(</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_detect</span>(fitness_proxy, <span class="fu">regex</span>(<span class="st">"hatching date"</span>, <span class="at">ignore_case =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>    <span class="sc">~</span> <span class="st">"hatching_date"</span>,    </span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>    <span class="cn">TRUE</span> <span class="sc">~</span> <span class="fu">as.character</span>(fitness_proxy_cleaned)  <span class="co"># Keeps existing values for all other cases</span></span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>  ))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="yolk-hormones" class="level4" data-number="2.2.2.12">
+<h4 data-number="2.2.2.12" class="anchored" data-anchor-id="yolk-hormones"><span class="header-section-number">2.2.2.12</span> 13. <strong>Yolk Hormones</strong></h4>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>dataset_after_cleaning <span class="ot">&lt;-</span> dataset_after_cleaning <span class="sc">%&gt;%</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mutate</span>(<span class="at">fitness_proxy_cleaned =</span> <span class="fu">case_when</span>(</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>   <span class="fu">str_detect</span>(fitness_proxy, <span class="fu">regex</span>(<span class="st">"Yolk Log T (testosterone)*"</span> , </span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) <span class="sc">~</span> </span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>     <span class="st">"yolk_hormones"</span>,</span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_detect</span>(fitness_proxy, <span class="fu">regex</span>(<span class="st">"Yolk Log A4(androstenedione)*"</span> , </span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) <span class="sc">~</span> </span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>     <span class="st">"yolk_hormones"</span>,</span>
+<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a>    <span class="cn">TRUE</span> <span class="sc">~</span> <span class="fu">as.character</span>(fitness_proxy_cleaned)  </span>
+<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a>   <span class="co"># Keeps existing values for all other cases</span></span>
+<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a>  ))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="male-and-female-body-size" class="level4" data-number="2.2.2.13">
+<h4 data-number="2.2.2.13" class="anchored" data-anchor-id="male-and-female-body-size"><span class="header-section-number">2.2.2.13</span> 14. <strong>Male and female body size</strong></h4>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>dataset_after_cleaning <span class="ot">&lt;-</span> dataset_after_cleaning <span class="sc">%&gt;%</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mutate</span>(<span class="at">fitness_proxy_cleaned =</span> <span class="fu">case_when</span>(</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>   <span class="fu">str_detect</span>(fitness_proxy, <span class="fu">regex</span>(<span class="st">"female body size"</span>, <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) </span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>    <span class="sc">~</span> <span class="st">"female_bodysize"</span>,</span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_detect</span>(fitness_proxy, <span class="fu">regex</span>(<span class="st">"male body size"</span>, <span class="at">ignore_case =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>    <span class="sc">~</span> <span class="st">"male_bodysize"</span>,    </span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>    <span class="cn">TRUE</span> <span class="sc">~</span> <span class="fu">as.character</span>(fitness_proxy_cleaned)  <span class="co"># Keeps existing values for all other cases</span></span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a>  ))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="male-and-female-mass" class="level4" data-number="2.2.2.14">
+<h4 data-number="2.2.2.14" class="anchored" data-anchor-id="male-and-female-mass"><span class="header-section-number">2.2.2.14</span> 15. <strong>Male and female mass</strong></h4>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>dataset_after_cleaning <span class="ot">&lt;-</span> dataset_after_cleaning <span class="sc">%&gt;%</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mutate</span>(<span class="at">fitness_proxy_cleaned =</span> <span class="fu">case_when</span>(</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_detect</span>(fitness_proxy, <span class="fu">regex</span>(<span class="st">"female mass"</span>, <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) </span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>    <span class="sc">~</span> <span class="st">"female_mass"</span>,</span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_detect</span>(fitness_proxy, <span class="fu">regex</span>(<span class="st">"male mass"</span>, <span class="at">ignore_case =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>    <span class="sc">~</span> <span class="st">"male_mass"</span>,    </span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>    <span class="cn">TRUE</span> <span class="sc">~</span> <span class="fu">as.character</span>(fitness_proxy_cleaned)  <span class="co"># Keeps existing values for all other cases</span></span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a>  ))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="male-and-female-wing-length" class="level4" data-number="2.2.2.15">
+<h4 data-number="2.2.2.15" class="anchored" data-anchor-id="male-and-female-wing-length"><span class="header-section-number">2.2.2.15</span> 16. <strong>Male and female wing length</strong></h4>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>dataset_after_cleaning <span class="ot">&lt;-</span> dataset_after_cleaning <span class="sc">%&gt;%</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mutate</span>(<span class="at">fitness_proxy_cleaned =</span> <span class="fu">case_when</span>(</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_detect</span>(fitness_proxy, <span class="fu">regex</span>(<span class="st">"female wing length"</span>, <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) </span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>    <span class="sc">~</span> <span class="st">"female_winglength"</span>,</span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_detect</span>(fitness_proxy, <span class="fu">regex</span>(<span class="st">"male wing length"</span>, <span class="at">ignore_case =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>    <span class="sc">~</span> <span class="st">"male_winglength"</span>,    </span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>    <span class="cn">TRUE</span> <span class="sc">~</span> <span class="fu">as.character</span>(fitness_proxy_cleaned)  <span class="co"># Keeps existing values for all other cases</span></span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>  ))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="male-and-female-tarsus-length" class="level4" data-number="2.2.2.16">
+<h4 data-number="2.2.2.16" class="anchored" data-anchor-id="male-and-female-tarsus-length"><span class="header-section-number">2.2.2.16</span> 17. <strong>Male and female tarsus length</strong></h4>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>dataset_after_cleaning <span class="ot">&lt;-</span> dataset_after_cleaning <span class="sc">%&gt;%</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mutate</span>(<span class="at">fitness_proxy_cleaned =</span> <span class="fu">case_when</span>(</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">str_detect</span>(fitness_proxy, <span class="fu">regex</span>(<span class="st">"female tarsus length"</span>, <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) </span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>    <span class="sc">~</span> <span class="st">"female_tarsus_length"</span>,</span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_detect</span>(fitness_proxy, <span class="fu">regex</span>(<span class="st">"male tarsus length"</span>, <span class="at">ignore_case =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>    <span class="sc">~</span> <span class="st">"male_tarsus_length"</span>,    </span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a>    <span class="cn">TRUE</span> <span class="sc">~</span> <span class="fu">as.character</span>(fitness_proxy_cleaned)  <span class="co"># Keeps existing values for all other cases</span></span>
+<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a>  ))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="sex-ratio" class="level4" data-number="2.2.2.17">
+<h4 data-number="2.2.2.17" class="anchored" data-anchor-id="sex-ratio"><span class="header-section-number">2.2.2.17</span> 18. <strong>Sex Ratio</strong></h4>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>dataset_after_cleaning <span class="ot">&lt;-</span> dataset_after_cleaning <span class="sc">%&gt;%</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mutate</span>(<span class="at">fitness_proxy_cleaned =</span> <span class="fu">case_when</span>(</span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_detect</span>(fitness_proxy, <span class="fu">regex</span>(<span class="st">"Sex ratio offspring*"</span>, <span class="at">ignore_case =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>    <span class="sc">~</span> <span class="st">"sex_ratio"</span>,    </span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>   <span class="fu">str_detect</span>(fitness_proxy, <span class="fu">regex</span>(<span class="st">"proportion of males per breeding attempt"</span>, </span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">ignore_case =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a>    <span class="sc">~</span> <span class="st">"sex_ratio"</span>,</span>
+<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a>    <span class="cn">TRUE</span> <span class="sc">~</span> <span class="fu">as.character</span>(fitness_proxy_cleaned)  <span class="co"># Keeps existing values for all other cases</span></span>
+<span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a>  ))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+</section>
+<section id="for-variables-that-fit-nest-protection-hypothesis" class="level3" data-number="2.2.3">
+<h3 data-number="2.2.3" class="anchored" data-anchor-id="for-variables-that-fit-nest-protection-hypothesis"><span class="header-section-number">2.2.3</span> For variables that fit nest protection hypothesis:</h3>
+<section id="number-of-mites" class="level4" data-number="2.2.3.1">
+<h4 data-number="2.2.3.1" class="anchored" data-anchor-id="number-of-mites"><span class="header-section-number">2.2.3.1</span> 1. <strong>Number of mites</strong></h4>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>dataset_after_cleaning <span class="ot">&lt;-</span> dataset_after_cleaning <span class="sc">%&gt;%</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mutate</span>(<span class="at">fitness_proxy_cleaned =</span> <span class="fu">case_when</span>(</span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_detect</span>(fitness_proxy, <span class="fu">regex</span>(<span class="st">"</span><span class="sc">\\</span><span class="st">bmite(s)?</span><span class="sc">\\</span><span class="st">b"</span>, <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) <span class="sc">~</span> <span class="st">"mites"</span>,</span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_detect</span>(fitness_proxy, <span class="fu">regex</span>(<span class="st">"mite load*"</span>, <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) </span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>    <span class="sc">~</span> <span class="st">"mites"</span>,</span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_detect</span>(fitness_proxy, <span class="fu">regex</span>(<span class="st">"mites_score"</span>, <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) </span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a>    <span class="sc">~</span> <span class="st">"mites"</span>,</span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a>    <span class="cn">TRUE</span> <span class="sc">~</span> <span class="fu">as.character</span>(fitness_proxy_cleaned)  </span>
+<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Keeps existing values for all other cases</span></span>
+<span id="cb31-10"><a href="#cb31-10" aria-hidden="true" tabindex="-1"></a>  ))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="number-of-fleas" class="level4" data-number="2.2.3.2">
+<h4 data-number="2.2.3.2" class="anchored" data-anchor-id="number-of-fleas"><span class="header-section-number">2.2.3.2</span> 3. <strong>Number of fleas</strong></h4>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>dataset_after_cleaning <span class="ot">&lt;-</span> dataset_after_cleaning <span class="sc">%&gt;%</span></span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mutate</span>(<span class="at">fitness_proxy_cleaned =</span> <span class="fu">case_when</span>(</span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_detect</span>(fitness_proxy, <span class="fu">regex</span>(<span class="st">"number of fleas*"</span>, <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) </span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>    <span class="sc">~</span> <span class="st">"fleas_number"</span>,</span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_detect</span>(fitness_proxy, <span class="fu">regex</span>(<span class="st">"fleas*"</span>, <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) </span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>    <span class="sc">~</span> <span class="st">"fleas_number"</span>,</span>
+<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a>    <span class="cn">TRUE</span> <span class="sc">~</span> <span class="fu">as.character</span>(fitness_proxy_cleaned)  </span>
+<span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Keeps existing values for all other cases</span></span>
+<span id="cb32-9"><a href="#cb32-9" aria-hidden="true" tabindex="-1"></a>  ))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="ticks-load" class="level4" data-number="2.2.3.3">
+<h4 data-number="2.2.3.3" class="anchored" data-anchor-id="ticks-load"><span class="header-section-number">2.2.3.3</span> 4. <strong>Ticks Load</strong></h4>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>dataset_after_cleaning <span class="ot">&lt;-</span> dataset_after_cleaning <span class="sc">%&gt;%</span></span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mutate</span>(<span class="at">fitness_proxy_cleaned =</span> <span class="fu">case_when</span>(</span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_detect</span>(fitness_proxy, <span class="fu">regex</span>(<span class="st">"tick load in the nest*"</span>, <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) </span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>    <span class="sc">~</span> <span class="st">"tick_load"</span>,</span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>    <span class="cn">TRUE</span> <span class="sc">~</span> <span class="fu">as.character</span>(fitness_proxy_cleaned)  </span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Keeps existing values for all other cases</span></span>
+<span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a>  ))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="number-of-blowfly" class="level4" data-number="2.2.3.4">
+<h4 data-number="2.2.3.4" class="anchored" data-anchor-id="number-of-blowfly"><span class="header-section-number">2.2.3.4</span> 5. <strong>Number of blowfly</strong></h4>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>dataset_after_cleaning <span class="ot">&lt;-</span> dataset_after_cleaning <span class="sc">%&gt;%</span></span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">fitness_proxy_cleaned =</span> <span class="fu">case_when</span>(</span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_detect</span>(fitness_proxy, <span class="fu">regex</span>(<span class="st">"</span><span class="sc">\\</span><span class="st">bblowfl(ies|y)</span><span class="sc">\\</span><span class="st">b"</span>, <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) <span class="sc">~</span> <span class="st">"blowflies_number"</span>,</span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_detect</span>(fitness_proxy, <span class="fu">regex</span>(<span class="st">"Protocalliphora*"</span>, <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) <span class="sc">~</span> <span class="st">"blowflies_number"</span>,</span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a>    <span class="cn">TRUE</span> <span class="sc">~</span> <span class="fu">as.character</span>(fitness_proxy_cleaned)  </span>
+<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Keeps existing values for all other cases</span></span>
+<span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a>  ))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="number-of-blowflies-parasitoids" class="level4" data-number="2.2.3.5">
+<h4 data-number="2.2.3.5" class="anchored" data-anchor-id="number-of-blowflies-parasitoids"><span class="header-section-number">2.2.3.5</span> 6. <strong>Number of blowflies parasitoids</strong></h4>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>dataset_after_cleaning <span class="ot">&lt;-</span> dataset_after_cleaning <span class="sc">%&gt;%</span></span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mutate</span>(<span class="at">fitness_proxy_cleaned =</span> <span class="fu">case_when</span>(</span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_detect</span>(fitness_proxy, <span class="fu">regex</span>(<span class="st">"blowfly parasitoid*"</span>, <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) </span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>    <span class="sc">~</span> <span class="st">"blowfly_parasitoids_number"</span>,</span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a>    <span class="cn">TRUE</span> <span class="sc">~</span> <span class="fu">as.character</span>(fitness_proxy_cleaned)  </span>
+<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Keeps existing values for all other cases</span></span>
+<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a>  ))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="number-of-midges" class="level4" data-number="2.2.3.6">
+<h4 data-number="2.2.3.6" class="anchored" data-anchor-id="number-of-midges"><span class="header-section-number">2.2.3.6</span> 7. <strong>Number of Midges</strong></h4>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>dataset_after_cleaning <span class="ot">&lt;-</span> dataset_after_cleaning <span class="sc">%&gt;%</span></span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mutate</span>(<span class="at">fitness_proxy_cleaned =</span> <span class="fu">case_when</span>(</span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_detect</span>(fitness_proxy, <span class="fu">regex</span>(<span class="st">"number of biting midges*"</span>, <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) </span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>    <span class="sc">~</span> <span class="st">"midges_number"</span>,</span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a>    <span class="cn">TRUE</span> <span class="sc">~</span> <span class="fu">as.character</span>(fitness_proxy_cleaned)  </span>
+<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Keeps existing values for all other cases</span></span>
+<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a>  ))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="number-of-blackflies" class="level4" data-number="2.2.3.7">
+<h4 data-number="2.2.3.7" class="anchored" data-anchor-id="number-of-blackflies"><span class="header-section-number">2.2.3.7</span> 8. <strong>Number of Blackflies</strong></h4>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>dataset_after_cleaning <span class="ot">&lt;-</span> dataset_after_cleaning <span class="sc">%&gt;%</span></span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mutate</span>(<span class="at">fitness_proxy_cleaned =</span> <span class="fu">case_when</span>(</span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_detect</span>(fitness_proxy, <span class="fu">regex</span>(<span class="st">"number of blackfl*"</span>, <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) </span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>    <span class="sc">~</span> <span class="st">"blackflies_number"</span>,</span>
+<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a>    <span class="cn">TRUE</span> <span class="sc">~</span> <span class="fu">as.character</span>(fitness_proxy_cleaned)  </span>
+<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Keeps existing values for all other cases</span></span>
+<span id="cb37-7"><a href="#cb37-7" aria-hidden="true" tabindex="-1"></a>  ))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="carnus-flies-load" class="level4" data-number="2.2.3.8">
+<h4 data-number="2.2.3.8" class="anchored" data-anchor-id="carnus-flies-load"><span class="header-section-number">2.2.3.8</span> 9. <strong>Carnus flies load</strong></h4>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>dataset_after_cleaning <span class="ot">&lt;-</span> dataset_after_cleaning <span class="sc">%&gt;%</span></span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mutate</span>(<span class="at">fitness_proxy_cleaned =</span> <span class="fu">case_when</span>(</span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_detect</span>(fitness_proxy, <span class="fu">regex</span>(<span class="st">"Log Carnus flies*"</span>, <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) </span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a>    <span class="sc">~</span> <span class="st">"carnusflies_load"</span>,</span>
+<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_detect</span>(fitness_proxy, <span class="fu">regex</span>(<span class="st">"carnus*"</span>, <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) </span>
+<span id="cb38-6"><a href="#cb38-6" aria-hidden="true" tabindex="-1"></a>    <span class="sc">~</span> <span class="st">"carnusflies_load"</span>,</span>
+<span id="cb38-7"><a href="#cb38-7" aria-hidden="true" tabindex="-1"></a>    <span class="cn">TRUE</span> <span class="sc">~</span> <span class="fu">as.character</span>(fitness_proxy_cleaned)  </span>
+<span id="cb38-8"><a href="#cb38-8" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Keeps existing values for all other cases</span></span>
+<span id="cb38-9"><a href="#cb38-9" aria-hidden="true" tabindex="-1"></a>  ))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="bacterial-load" class="level4" data-number="2.2.3.9">
+<h4 data-number="2.2.3.9" class="anchored" data-anchor-id="bacterial-load"><span class="header-section-number">2.2.3.9</span> 10. <strong>Bacterial Load</strong></h4>
+<p>There are several different kinds of bacterial that authors have measures like enterococcus/enterobacteria or mesophilic bacterial. In some cases authors do not give description of what bacteria they measure the load for.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>dataset_after_cleaning <span class="ot">&lt;-</span> dataset_after_cleaning <span class="sc">%&gt;%</span></span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mutate</span>(<span class="at">fitness_proxy_cleaned =</span> <span class="fu">case_when</span>(</span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_detect</span>(fitness_proxy, <span class="fu">regex</span>(<span class="st">"total bacterial load*"</span>, <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) </span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>    <span class="sc">~</span> <span class="st">"bacterial_load"</span>,</span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_detect</span>(fitness_proxy, <span class="fu">regex</span>(<span class="st">"bacteria load*"</span>, <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) </span>
+<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a>    <span class="sc">~</span> <span class="st">"bacterial_load"</span>,</span>
+<span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a>     <span class="fu">str_detect</span>(fitness_proxy, <span class="fu">regex</span>(<span class="st">"load of enterobacteria*"</span>, <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) </span>
+<span id="cb39-8"><a href="#cb39-8" aria-hidden="true" tabindex="-1"></a>    <span class="sc">~</span> <span class="st">"bacterial_load"</span>,</span>
+<span id="cb39-9"><a href="#cb39-9" aria-hidden="true" tabindex="-1"></a>     <span class="fu">str_detect</span>(fitness_proxy, <span class="fu">regex</span>(<span class="st">"log mesophilic bacteria*"</span>, <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) </span>
+<span id="cb39-10"><a href="#cb39-10" aria-hidden="true" tabindex="-1"></a>    <span class="sc">~</span> <span class="st">"bacterial_load"</span>,</span>
+<span id="cb39-11"><a href="#cb39-11" aria-hidden="true" tabindex="-1"></a>     <span class="fu">str_detect</span>(fitness_proxy, <span class="fu">regex</span>(<span class="st">"log enterococcus*"</span>, <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) </span>
+<span id="cb39-12"><a href="#cb39-12" aria-hidden="true" tabindex="-1"></a>    <span class="sc">~</span> <span class="st">"bacterial_load"</span>,</span>
+<span id="cb39-13"><a href="#cb39-13" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_detect</span>(fitness_proxy, <span class="fu">regex</span>(<span class="st">"mesophilic bacterial density (log)*"</span>, </span>
+<span id="cb39-14"><a href="#cb39-14" aria-hidden="true" tabindex="-1"></a>                                      <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) </span>
+<span id="cb39-15"><a href="#cb39-15" aria-hidden="true" tabindex="-1"></a>    <span class="sc">~</span> <span class="st">"bacterial_load"</span>,</span>
+<span id="cb39-16"><a href="#cb39-16" aria-hidden="true" tabindex="-1"></a>    <span class="cn">TRUE</span> <span class="sc">~</span> <span class="fu">as.character</span>(fitness_proxy_cleaned)  </span>
+<span id="cb39-17"><a href="#cb39-17" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Keeps existing values for all other cases</span></span>
+<span id="cb39-18"><a href="#cb39-18" aria-hidden="true" tabindex="-1"></a>  ))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="bacterial-richness" class="level4" data-number="2.2.3.10">
+<h4 data-number="2.2.3.10" class="anchored" data-anchor-id="bacterial-richness"><span class="header-section-number">2.2.3.10</span> 11. <strong>Bacterial Richness</strong></h4>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>dataset_after_cleaning <span class="ot">&lt;-</span> dataset_after_cleaning <span class="sc">%&gt;%</span></span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mutate</span>(<span class="at">fitness_proxy_cleaned =</span> <span class="fu">case_when</span>(</span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_detect</span>(fitness_proxy, <span class="fu">regex</span>(<span class="st">"bacterial_richness*"</span>, <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) </span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>    <span class="sc">~</span> <span class="st">"bacterial_richness"</span>,</span>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a>    <span class="cn">TRUE</span> <span class="sc">~</span> <span class="fu">as.character</span>(fitness_proxy_cleaned)  </span>
+<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Keeps existing values for all other cases</span></span>
+<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a>  ))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="bacterial-increase" class="level4" data-number="2.2.3.11">
+<h4 data-number="2.2.3.11" class="anchored" data-anchor-id="bacterial-increase"><span class="header-section-number">2.2.3.11</span> 12. <strong>Bacterial Increase</strong></h4>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>dataset_after_cleaning <span class="ot">&lt;-</span> dataset_after_cleaning <span class="sc">%&gt;%</span></span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mutate</span>(<span class="at">fitness_proxy_cleaned =</span> <span class="fu">case_when</span>(</span>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_detect</span>(fitness_proxy, <span class="fu">regex</span>(<span class="st">"bacterial increase*"</span>, <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) </span>
+<span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a>    <span class="sc">~</span> <span class="st">"bacterial_increase"</span>,</span>
+<span id="cb41-5"><a href="#cb41-5" aria-hidden="true" tabindex="-1"></a>    <span class="cn">TRUE</span> <span class="sc">~</span> <span class="fu">as.character</span>(fitness_proxy_cleaned)  </span>
+<span id="cb41-6"><a href="#cb41-6" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Keeps existing values for all other cases</span></span>
+<span id="cb41-7"><a href="#cb41-7" aria-hidden="true" tabindex="-1"></a>  ))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="scab-score" class="level4" data-number="2.2.3.12">
+<h4 data-number="2.2.3.12" class="anchored" data-anchor-id="scab-score"><span class="header-section-number">2.2.3.12</span> 13. <strong>Scab Score</strong></h4>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>dataset_after_cleaning <span class="ot">&lt;-</span> dataset_after_cleaning <span class="sc">%&gt;%</span></span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mutate</span>(<span class="at">fitness_proxy_cleaned =</span> <span class="fu">case_when</span>(</span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_detect</span>(fitness_proxy, <span class="fu">regex</span>(<span class="st">"</span><span class="sc">\\</span><span class="st">bscab(s)?</span><span class="sc">\\</span><span class="st">b"</span>, <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) <span class="sc">~</span> <span class="st">"scab_score"</span>,   </span>
+<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_detect</span>(fitness_proxy, <span class="fu">regex</span>(<span class="st">"scab_score"</span>, <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) <span class="sc">~</span> <span class="st">"scab_score"</span>,   </span>
+<span id="cb42-5"><a href="#cb42-5" aria-hidden="true" tabindex="-1"></a>    <span class="cn">TRUE</span> <span class="sc">~</span> <span class="fu">as.character</span>(fitness_proxy_cleaned)  <span class="co"># Keeps existing values for all other cases</span></span>
+<span id="cb42-6"><a href="#cb42-6" aria-hidden="true" tabindex="-1"></a>  ))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+</section>
+<section id="for-variables-that-fit-drug-hypothesis-nest-protection-parental-care" class="level3" data-number="2.2.4">
+<h3 data-number="2.2.4" class="anchored"><span class="header-section-number">2.2.4</span> For Variables that fit Drug Hypothesis + Nest Protection (Parental care)</h3>
+<section id="haemoglobin-measure" class="level4" data-number="2.2.4.1">
+<h4 data-number="2.2.4.1" class="anchored" data-anchor-id="haemoglobin-measure"><span class="header-section-number">2.2.4.1</span> 1. <strong>Haemoglobin Measure</strong></h4>
+<p>Hematocrit level is combined here with haemoglobin concentration as “hemoglobin_measure”. Hematocrit is measured as a percentage as compared to Haemoglobin which is a w/V concentration.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>dataset_after_cleaning <span class="ot">&lt;-</span> dataset_after_cleaning <span class="sc">%&gt;%</span></span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mutate</span>(<span class="at">fitness_proxy_cleaned =</span> <span class="fu">case_when</span>(</span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_detect</span>(fitness_proxy, <span class="fu">regex</span>(<span class="st">"hemoglobin concentration*"</span>, <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) </span>
+<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a>    <span class="sc">~</span> <span class="st">"hemoglobin_measure"</span>,</span>
+<span id="cb43-5"><a href="#cb43-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_detect</span>(fitness_proxy, <span class="fu">regex</span>(<span class="st">"blood haemoglobin*"</span>, <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) </span>
+<span id="cb43-6"><a href="#cb43-6" aria-hidden="true" tabindex="-1"></a>    <span class="sc">~</span> <span class="st">"hemoglobin_measure"</span>,</span>
+<span id="cb43-7"><a href="#cb43-7" aria-hidden="true" tabindex="-1"></a>     <span class="fu">str_detect</span>(fitness_proxy, <span class="fu">regex</span>(<span class="st">"heamatocrit percent*"</span>, <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) </span>
+<span id="cb43-8"><a href="#cb43-8" aria-hidden="true" tabindex="-1"></a>    <span class="sc">~</span> <span class="st">"hemoglobin_measure"</span>,</span>
+<span id="cb43-9"><a href="#cb43-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_detect</span>(fitness_proxy, <span class="fu">regex</span>(<span class="st">"hematocrit level*"</span>, <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) </span>
+<span id="cb43-10"><a href="#cb43-10" aria-hidden="true" tabindex="-1"></a>    <span class="sc">~</span> <span class="st">"hemoglobin_measure"</span>,</span>
+<span id="cb43-11"><a href="#cb43-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_detect</span>(fitness_proxy, <span class="fu">regex</span>(<span class="st">"haematocrit"</span>, <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) </span>
+<span id="cb43-12"><a href="#cb43-12" aria-hidden="true" tabindex="-1"></a>    <span class="sc">~</span> <span class="st">"hemoglobin_measure"</span>,</span>
+<span id="cb43-13"><a href="#cb43-13" aria-hidden="true" tabindex="-1"></a>    <span class="cn">TRUE</span> <span class="sc">~</span> <span class="fu">as.character</span>(fitness_proxy_cleaned)  </span>
+<span id="cb43-14"><a href="#cb43-14" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Keeps existing values for all other cases</span></span>
+<span id="cb43-15"><a href="#cb43-15" aria-hidden="true" tabindex="-1"></a>  ))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="glucose-measure" class="level4" data-number="2.2.4.2">
+<h4 data-number="2.2.4.2" class="anchored" data-anchor-id="glucose-measure"><span class="header-section-number">2.2.4.2</span> <strong>2. Glucose Measure</strong></h4>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>dataset_after_cleaning <span class="ot">&lt;-</span> dataset_after_cleaning <span class="sc">%&gt;%</span></span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mutate</span>(<span class="at">fitness_proxy_cleaned =</span> <span class="fu">case_when</span>(</span>
+<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_detect</span>(fitness_proxy, <span class="fu">regex</span>(<span class="st">"glucose concentration*"</span>, <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) </span>
+<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a>    <span class="sc">~</span> <span class="st">"glucose_measure"</span>,</span>
+<span id="cb44-5"><a href="#cb44-5" aria-hidden="true" tabindex="-1"></a>     <span class="cn">TRUE</span> <span class="sc">~</span> <span class="fu">as.character</span>(fitness_proxy_cleaned)  </span>
+<span id="cb44-6"><a href="#cb44-6" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Keeps existing values for all other cases</span></span>
+<span id="cb44-7"><a href="#cb44-7" aria-hidden="true" tabindex="-1"></a>  ))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="nestling-tarsus-length" class="level4" data-number="2.2.4.3">
+<h4 data-number="2.2.4.3" class="anchored" data-anchor-id="nestling-tarsus-length"><span class="header-section-number">2.2.4.3</span> <strong>3. Nestling Tarsus Length</strong></h4>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="co">#checked paper GNM_069 word tarsus length is used to describe nestlings of 14 days</span></span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a>dataset_after_cleaning <span class="ot">&lt;-</span> dataset_after_cleaning <span class="sc">%&gt;%</span></span>
+<span id="cb45-4"><a href="#cb45-4" aria-hidden="true" tabindex="-1"></a><span class="fu">mutate</span>(<span class="at">fitness_proxy_cleaned =</span> <span class="fu">case_when</span>(</span>
+<span id="cb45-5"><a href="#cb45-5" aria-hidden="true" tabindex="-1"></a>   <span class="fu">str_detect</span>(fitness_proxy, <span class="fu">regex</span>(<span class="st">"nestling tarsus length"</span> , <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) <span class="sc">~</span> <span class="st">"nestling_tarsus_length"</span>,</span>
+<span id="cb45-6"><a href="#cb45-6" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_detect</span>(fitness_proxy,<span class="st">"tarsal length"</span>) <span class="sc">~</span> <span class="st">"nestling_tarsus_length"</span>,</span>
+<span id="cb45-7"><a href="#cb45-7" aria-hidden="true" tabindex="-1"></a>   <span class="fu">str_detect</span>(fitness_proxy,<span class="st">"Tarsus Length*"</span>) <span class="sc">~</span> <span class="st">"nestling_tarsus_length"</span>,</span>
+<span id="cb45-8"><a href="#cb45-8" aria-hidden="true" tabindex="-1"></a>   </span>
+<span id="cb45-9"><a href="#cb45-9" aria-hidden="true" tabindex="-1"></a>    <span class="cn">TRUE</span> <span class="sc">~</span> <span class="fu">as.character</span>(fitness_proxy_cleaned)  </span>
+<span id="cb45-10"><a href="#cb45-10" aria-hidden="true" tabindex="-1"></a>   <span class="co"># Keeps existing values for all other cases</span></span>
+<span id="cb45-11"><a href="#cb45-11" aria-hidden="true" tabindex="-1"></a>  ))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="nestling-wing-length" class="level4" data-number="2.2.4.4">
+<h4 data-number="2.2.4.4" class="anchored" data-anchor-id="nestling-wing-length"><span class="header-section-number">2.2.4.4</span> <strong>4. Nestling Wing Length</strong></h4>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>dataset_after_cleaning <span class="ot">&lt;-</span> dataset_after_cleaning <span class="sc">%&gt;%</span></span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mutate</span>(<span class="at">fitness_proxy_cleaned =</span> <span class="fu">case_when</span>(</span>
+<span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a>   <span class="fu">str_detect</span>(fitness_proxy, <span class="fu">regex</span>(<span class="st">"nestling wing*"</span> , <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) </span>
+<span id="cb46-4"><a href="#cb46-4" aria-hidden="true" tabindex="-1"></a>   <span class="sc">~</span> <span class="st">"nestling_wing_length"</span>,</span>
+<span id="cb46-5"><a href="#cb46-5" aria-hidden="true" tabindex="-1"></a>   <span class="fu">str_detect</span>(fitness_proxy, <span class="fu">regex</span>(<span class="st">"length of primary flight feather length of nestlings at day 12"</span> , </span>
+<span id="cb46-6"><a href="#cb46-6" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) </span>
+<span id="cb46-7"><a href="#cb46-7" aria-hidden="true" tabindex="-1"></a>   <span class="sc">~</span> <span class="st">"nestling_wing_length"</span>,</span>
+<span id="cb46-8"><a href="#cb46-8" aria-hidden="true" tabindex="-1"></a>   <span class="cn">TRUE</span> <span class="sc">~</span> <span class="fu">as.character</span>(fitness_proxy_cleaned)  </span>
+<span id="cb46-9"><a href="#cb46-9" aria-hidden="true" tabindex="-1"></a>   <span class="co"># Keeps existing values for all other cases</span></span>
+<span id="cb46-10"><a href="#cb46-10" aria-hidden="true" tabindex="-1"></a>  ))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="nestling-immunity" class="level4" data-number="2.2.4.5">
+<h4 data-number="2.2.4.5" class="anchored" data-anchor-id="nestling-immunity"><span class="header-section-number">2.2.4.5</span> <strong>5. Nestling Immunity</strong></h4>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>dataset_after_cleaning <span class="ot">&lt;-</span> dataset_after_cleaning <span class="sc">%&gt;%</span></span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mutate</span>(<span class="at">fitness_proxy_cleaned =</span> <span class="fu">case_when</span>(</span>
+<span id="cb47-3"><a href="#cb47-3" aria-hidden="true" tabindex="-1"></a>   <span class="fu">str_detect</span>(fitness_proxy, <span class="fu">regex</span>(<span class="st">"nestling PHA*"</span> , <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) </span>
+<span id="cb47-4"><a href="#cb47-4" aria-hidden="true" tabindex="-1"></a>   <span class="co"># PHA is phytohaemagglutinin and single-wing phytohaemagglutinin is used as a measure of immunity in avian biology: </span></span>
+<span id="cb47-5"><a href="#cb47-5" aria-hidden="true" tabindex="-1"></a>   <span class="co"># Smits, J.E., Bortolotti, G.R. and Tella, J.L. (1999), Simplifying the phytohaemagglutinin skin-testing technique in studies of avian immunocompetence. Functional Ecology, 13: 567-572. https://doi.org/10.1046/j.1365-2435.1999.00338.x</span></span>
+<span id="cb47-6"><a href="#cb47-6" aria-hidden="true" tabindex="-1"></a>   <span class="sc">~</span> <span class="st">"nestling_immunity"</span>,</span>
+<span id="cb47-7"><a href="#cb47-7" aria-hidden="true" tabindex="-1"></a>   <span class="fu">str_detect</span>(fitness_proxy, <span class="fu">regex</span>(<span class="st">"Phytohaemagglutinin*"</span> , <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) </span>
+<span id="cb47-8"><a href="#cb47-8" aria-hidden="true" tabindex="-1"></a>   <span class="sc">~</span> <span class="st">"nestling_immunity"</span>,</span>
+<span id="cb47-9"><a href="#cb47-9" aria-hidden="true" tabindex="-1"></a>   <span class="cn">TRUE</span> <span class="sc">~</span> <span class="fu">as.character</span>(fitness_proxy_cleaned)  </span>
+<span id="cb47-10"><a href="#cb47-10" aria-hidden="true" tabindex="-1"></a>   <span class="co"># Keeps existing values for all other cases</span></span>
+<span id="cb47-11"><a href="#cb47-11" aria-hidden="true" tabindex="-1"></a>  ))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="nestling-size" class="level4" data-number="2.2.4.6">
+<h4 data-number="2.2.4.6" class="anchored" data-anchor-id="nestling-size"><span class="header-section-number">2.2.4.6</span> <strong>6. Nestling Size</strong></h4>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>dataset_after_cleaning <span class="ot">&lt;-</span> dataset_after_cleaning <span class="sc">%&gt;%</span></span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mutate</span>(<span class="at">fitness_proxy_cleaned =</span> <span class="fu">case_when</span>(</span>
+<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a>   <span class="fu">str_detect</span>(fitness_proxy, <span class="fu">regex</span>(<span class="st">"nestling size*"</span> , <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) </span>
+<span id="cb48-4"><a href="#cb48-4" aria-hidden="true" tabindex="-1"></a>   <span class="sc">~</span> <span class="st">"nestling_size"</span>,</span>
+<span id="cb48-5"><a href="#cb48-5" aria-hidden="true" tabindex="-1"></a>   <span class="cn">TRUE</span> <span class="sc">~</span> <span class="fu">as.character</span>(fitness_proxy_cleaned)  </span>
+<span id="cb48-6"><a href="#cb48-6" aria-hidden="true" tabindex="-1"></a>   <span class="co"># Keeps existing values for all other cases</span></span>
+<span id="cb48-7"><a href="#cb48-7" aria-hidden="true" tabindex="-1"></a>  ))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="nestling-leukocytes" class="level4" data-number="2.2.4.7">
+<h4 data-number="2.2.4.7" class="anchored" data-anchor-id="nestling-leukocytes"><span class="header-section-number">2.2.4.7</span> <strong>7. Nestling Leukocytes</strong></h4>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a>dataset_after_cleaning <span class="ot">&lt;-</span> dataset_after_cleaning <span class="sc">%&gt;%</span></span>
+<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mutate</span>(<span class="at">fitness_proxy_cleaned =</span> <span class="fu">case_when</span>(</span>
+<span id="cb49-3"><a href="#cb49-3" aria-hidden="true" tabindex="-1"></a>   <span class="fu">str_detect</span>(fitness_proxy, <span class="fu">regex</span>(<span class="st">"nestling leukocyte*"</span> , <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) </span>
+<span id="cb49-4"><a href="#cb49-4" aria-hidden="true" tabindex="-1"></a>   <span class="sc">~</span> <span class="st">"nestling_leukocytes"</span>,</span>
+<span id="cb49-5"><a href="#cb49-5" aria-hidden="true" tabindex="-1"></a>   <span class="fu">str_detect</span>(fitness_proxy, <span class="fu">regex</span>(<span class="st">"WBC measure of nestlings"</span> , <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) </span>
+<span id="cb49-6"><a href="#cb49-6" aria-hidden="true" tabindex="-1"></a>   <span class="sc">~</span> <span class="st">"nestling_leukocytes"</span>,</span>
+<span id="cb49-7"><a href="#cb49-7" aria-hidden="true" tabindex="-1"></a>   <span class="cn">TRUE</span> <span class="sc">~</span> <span class="fu">as.character</span>(fitness_proxy_cleaned)  </span>
+<span id="cb49-8"><a href="#cb49-8" aria-hidden="true" tabindex="-1"></a>   <span class="co"># Keeps existing values for all other cases</span></span>
+<span id="cb49-9"><a href="#cb49-9" aria-hidden="true" tabindex="-1"></a>  ))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="chick-feather-development" class="level4" data-number="2.2.4.8">
+<h4 data-number="2.2.4.8" class="anchored" data-anchor-id="chick-feather-development"><span class="header-section-number">2.2.4.8</span> <strong>8. Chick Feather Development</strong></h4>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>dataset_after_cleaning <span class="ot">&lt;-</span> dataset_after_cleaning <span class="sc">%&gt;%</span></span>
+<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mutate</span>(<span class="at">fitness_proxy_cleaned =</span> <span class="fu">case_when</span>(</span>
+<span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a>   <span class="fu">str_detect</span>(fitness_proxy, <span class="fu">regex</span>(<span class="st">"chick feather development*"</span> , <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) </span>
+<span id="cb50-4"><a href="#cb50-4" aria-hidden="true" tabindex="-1"></a>   <span class="sc">~</span> <span class="st">"chick_feather_development"</span>,</span>
+<span id="cb50-5"><a href="#cb50-5" aria-hidden="true" tabindex="-1"></a>   <span class="cn">TRUE</span> <span class="sc">~</span> <span class="fu">as.character</span>(fitness_proxy_cleaned)  </span>
+<span id="cb50-6"><a href="#cb50-6" aria-hidden="true" tabindex="-1"></a>   <span class="co"># Keeps existing values for all other cases</span></span>
+<span id="cb50-7"><a href="#cb50-7" aria-hidden="true" tabindex="-1"></a>  ))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="development-score" class="level4" data-number="2.2.4.9">
+<h4 data-number="2.2.4.9" class="anchored" data-anchor-id="development-score"><span class="header-section-number">2.2.4.9</span> <strong>9. Development Score</strong></h4>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a>dataset_after_cleaning <span class="ot">&lt;-</span> dataset_after_cleaning <span class="sc">%&gt;%</span></span>
+<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mutate</span>(<span class="at">fitness_proxy_cleaned =</span> <span class="fu">case_when</span>(</span>
+<span id="cb51-3"><a href="#cb51-3" aria-hidden="true" tabindex="-1"></a>   <span class="fu">str_detect</span>(fitness_proxy, <span class="fu">regex</span>(<span class="st">"meandevoscore*"</span> , <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) </span>
+<span id="cb51-4"><a href="#cb51-4" aria-hidden="true" tabindex="-1"></a>   <span class="sc">~</span> <span class="st">"clutch_development_score"</span>,</span>
+<span id="cb51-5"><a href="#cb51-5" aria-hidden="true" tabindex="-1"></a>   <span class="cn">TRUE</span> <span class="sc">~</span> <span class="fu">as.character</span>(fitness_proxy_cleaned)  </span>
+<span id="cb51-6"><a href="#cb51-6" aria-hidden="true" tabindex="-1"></a>   <span class="co"># Keeps existing values for all other cases</span></span>
+<span id="cb51-7"><a href="#cb51-7" aria-hidden="true" tabindex="-1"></a>  ))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="female-body-condition-tarsuswing" class="level4" data-number="2.2.4.10">
+<h4 data-number="2.2.4.10" class="anchored" data-anchor-id="female-body-condition-tarsuswing"><span class="header-section-number">2.2.4.10</span> <strong>10. Female body condition (Tarsus/wing)</strong></h4>
+<p>Here the authors have studied the effect of parasite on he adult female (yearlings) measured at two time point to understand how the parasite load effects the adults in the nest (GNM_101)</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>dataset_after_cleaning <span class="ot">&lt;-</span> dataset_after_cleaning <span class="sc">%&gt;%</span></span>
+<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mutate</span>(<span class="at">fitness_proxy_cleaned =</span> <span class="fu">case_when</span>(</span>
+<span id="cb52-3"><a href="#cb52-3" aria-hidden="true" tabindex="-1"></a>   <span class="fu">str_detect</span>(fitness_proxy, <span class="fu">regex</span>(<span class="st">"female body condition*"</span> , <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) </span>
+<span id="cb52-4"><a href="#cb52-4" aria-hidden="true" tabindex="-1"></a>   <span class="sc">~</span> <span class="st">"female_body_condition"</span>,</span>
+<span id="cb52-5"><a href="#cb52-5" aria-hidden="true" tabindex="-1"></a>   <span class="cn">TRUE</span> <span class="sc">~</span> <span class="fu">as.character</span>(fitness_proxy_cleaned)  </span>
+<span id="cb52-6"><a href="#cb52-6" aria-hidden="true" tabindex="-1"></a>   <span class="co"># Keeps existing values for all other cases</span></span>
+<span id="cb52-7"><a href="#cb52-7" aria-hidden="true" tabindex="-1"></a>  ))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="telomere-measure" class="level4" data-number="2.2.4.11">
+<h4 data-number="2.2.4.11" class="anchored" data-anchor-id="telomere-measure"><span class="header-section-number">2.2.4.11</span> <strong>11. Telomere measure</strong></h4>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a>dataset_after_cleaning <span class="ot">&lt;-</span> dataset_after_cleaning <span class="sc">%&gt;%</span></span>
+<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mutate</span>(<span class="at">fitness_proxy_cleaned =</span> <span class="fu">case_when</span>(</span>
+<span id="cb53-3"><a href="#cb53-3" aria-hidden="true" tabindex="-1"></a>   <span class="fu">str_detect</span>(fitness_proxy, <span class="fu">regex</span>(<span class="st">"Rank telomere length*"</span> , </span>
+<span id="cb53-4"><a href="#cb53-4" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) </span>
+<span id="cb53-5"><a href="#cb53-5" aria-hidden="true" tabindex="-1"></a>   <span class="sc">~</span> <span class="st">"telomere_measure"</span>,</span>
+<span id="cb53-6"><a href="#cb53-6" aria-hidden="true" tabindex="-1"></a>   <span class="fu">str_detect</span>(fitness_proxy, <span class="fu">regex</span>(<span class="st">"Rank difference in Telomere length*"</span> , </span>
+<span id="cb53-7"><a href="#cb53-7" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">ignore_case =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb53-8"><a href="#cb53-8" aria-hidden="true" tabindex="-1"></a>   <span class="sc">~</span> <span class="st">"telomere_measure"</span>,</span>
+<span id="cb53-9"><a href="#cb53-9" aria-hidden="true" tabindex="-1"></a>   <span class="cn">TRUE</span> <span class="sc">~</span> <span class="fu">as.character</span>(fitness_proxy_cleaned)  </span>
+<span id="cb53-10"><a href="#cb53-10" aria-hidden="true" tabindex="-1"></a>   <span class="co"># Keeps existing values for all other cases</span></span>
+<span id="cb53-11"><a href="#cb53-11" aria-hidden="true" tabindex="-1"></a>  ))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="fat-score" class="level4" data-number="2.2.4.12">
+<h4 data-number="2.2.4.12" class="anchored"><span class="header-section-number">2.2.4.12</span> <strong>12. Fat Score</strong></h4>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a>dataset_after_cleaning <span class="ot">&lt;-</span> dataset_after_cleaning <span class="sc">%&gt;%</span></span>
+<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mutate</span>(<span class="at">fitness_proxy_cleaned =</span> <span class="fu">case_when</span>(</span>
+<span id="cb54-3"><a href="#cb54-3" aria-hidden="true" tabindex="-1"></a>   <span class="fu">str_detect</span>(fitness_proxy, <span class="fu">regex</span>(<span class="st">"fat score*"</span> , <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) </span>
+<span id="cb54-4"><a href="#cb54-4" aria-hidden="true" tabindex="-1"></a>   <span class="sc">~</span> <span class="st">"fat_score"</span>,</span>
+<span id="cb54-5"><a href="#cb54-5" aria-hidden="true" tabindex="-1"></a>   <span class="cn">TRUE</span> <span class="sc">~</span> <span class="fu">as.character</span>(fitness_proxy_cleaned)  </span>
+<span id="cb54-6"><a href="#cb54-6" aria-hidden="true" tabindex="-1"></a>   <span class="co"># Keeps existing values for all other cases</span></span>
+<span id="cb54-7"><a href="#cb54-7" aria-hidden="true" tabindex="-1"></a>  ))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+To Check the dataset:
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Some questions to ask AST</p>
+<section id="ask-ast" class="level2" data-number="2.3">
+<h2 data-number="2.3" class="anchored" data-anchor-id="ask-ast"><span class="header-section-number">2.3</span> Ask AST</h2>
+<ul>
+<li><p>Nest mortality and reproductive success, can we club them under similar fitness proxy?</p></li>
+<li><p>Fledgling success vs survival to fledgling vs.&nbsp;survival rate nestling, how do these differ?</p></li>
+</ul>
+</section>
+</div>
+</div>
+</section>
+</section>
+</section>
+<section id="we-excluded-some-proxies-from-our-dataset" class="level2" data-number="2.4">
+<h2 data-number="2.4" class="anchored" data-anchor-id="we-excluded-some-proxies-from-our-dataset"><span class="header-section-number">2.4</span> We excluded some proxies from our dataset</h2>
+<div class="cell">
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<caption>Excluded proxies</caption>
+<colgroup>
+<col style="width: 2%">
+<col style="width: 4%">
+<col style="width: 93%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Paper ID</th>
+<th style="text-align: left;">Fitness Trait</th>
+<th style="text-align: left;">Reason for exclusion</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">GNM_152</td>
+<td style="text-align: left;">male food provisioning</td>
+<td style="text-align: left;">This is only tested non-experimentally with correlational data.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">GNM_152</td>
+<td style="text-align: left;">male incubation attendance</td>
+<td style="text-align: left;">This is only tested non-experimentally with correlational data.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">GNM_152</td>
+<td style="text-align: left;">male body size</td>
+<td style="text-align: left;">This is only tested non-experimentally with correlational data.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">GNM_152</td>
+<td style="text-align: left;">male tarsus length</td>
+<td style="text-align: left;">This is only tested non-experimentally with correlational data.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">GNM_152</td>
+<td style="text-align: left;">male wing length</td>
+<td style="text-align: left;">This is only tested non-experimentally with correlational data.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">GNM_152</td>
+<td style="text-align: left;">female body size</td>
+<td style="text-align: left;">This is only tested non-experimentally with correlational data.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">GNM_152</td>
+<td style="text-align: left;">female tarsus length</td>
+<td style="text-align: left;">This is only tested non-experimentally with correlational data.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">GNM_152</td>
+<td style="text-align: left;">female wing length</td>
+<td style="text-align: left;">This is only tested non-experimentally with correlational data.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">GNM_237</td>
+<td style="text-align: left;">log mesophilic bacteria</td>
+<td style="text-align: left;">There is an additional treatment of contaminating the eggs with bacteria.. This is not comparable across studies and an exceptional case of artificial contamination</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">GNM_237</td>
+<td style="text-align: left;">log mesophilic bacteria</td>
+<td style="text-align: left;">There is an additional treatment of contaminating the eggs with bacteria.. This is not comparable across studies and an exceptional case of artificial contamination</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">GNM_237</td>
+<td style="text-align: left;">log mesophilic bacteria</td>
+<td style="text-align: left;">There is an additional treatment of contaminating the eggs with bacteria.. This is not comparable across studies and an exceptional case of artificial contamination</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">GNM_018</td>
+<td style="text-align: left;">female provisioning rate (day 6)</td>
+<td style="text-align: left;">We will exclude this variable from all our analysis altogether. Since females add the GNM as noted by the authors, it is the male that would/should adjust their investment. One can argue female investment will be an indirect reflection of the male’s investment. However, this is very indirect and the direction of this proxy in relation to the GNM addition can be argued both ways. That is, if females use GNM as an honest signal to increase male investment, their own investment would not be directly related to fitness or they would increase investment to compensate for the lack of male investment. Or it would be negatively related to fitness because they invested in bringing in the GNM as well as in higher provisioning. Therefore, we will exclude it.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">GNM_018</td>
+<td style="text-align: left;">female provisioning rate (day 11)</td>
+<td style="text-align: left;">We will exclude this variable from all our analysis altogether. Since females add the GNM as noted by the authors, it is the male that would/should adjust their investment. One can argue female investment will be an indirect reflection of the male’s investment. However, this is very indirect and the direction of this proxy in relation to the GNM addition can be argued both ways. That is, if females use GNM as an honest signal to increase male investment, their own investment would not be directly related to fitness or they would increase investment to compensate for the lack of male investment. Or it would be negatively related to fitness because they invested in bringing in the GNM as well as in higher provisioning. Therefore, we will exclude it.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">GNM_018</td>
+<td style="text-align: left;">reproductive success</td>
+<td style="text-align: left;">These values are already provided in GNM_101, therefore, duplicated. How I make the decision they are the same results is because the values reported in GNM_101 and the ones I calculated from the dataset provided by the authors match 100% for these variables and the study year and population is the same.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">GNM_018</td>
+<td style="text-align: left;">hatch success</td>
+<td style="text-align: left;">These values are already provided in GNM_101, therefore, duplicated. How I make the decision they are the same results is because the values reported in GNM_101 and the ones I calculated from the dataset provided by the authors match 100% for these variables and the study year and population is the same.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">GNM_018</td>
+<td style="text-align: left;">laying date</td>
+<td style="text-align: left;">These values are already provided in GNM_101, therefore, duplicated. How I make the decision they are the same results is because the values reported in GNM_101 and the ones I calculated from the dataset provided by the authors match 100% for these variables and the study year and population is the same.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">GNM_018</td>
+<td style="text-align: left;">clutch size</td>
+<td style="text-align: left;">These values are already provided in GNM_101, therefore, duplicated. How I make the decision they are the same results is because the values reported in GNM_101 and the ones I calculated from the dataset provided by the authors match 100% for these variables and the study year and population is the same.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">GNM_018</td>
+<td style="text-align: left;">hatching date</td>
+<td style="text-align: left;">These values are already provided in GNM_101, therefore, duplicated. How I make the decision they are the same results is because the values reported in GNM_101 and the ones I calculated from the dataset provided by the authors match 100% for these variables and the study year and population is the same.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">GNM_355</td>
+<td style="text-align: left;">chick mass (May, Day6)</td>
+<td style="text-align: left;">We have combined the means, standard deviations and sample sizes for different months together for this paper. We realised that the sample size was as low as 1 in some cases, with effective sample size being 0.5 which does not allow us to estimate the effect size (SMDH specifically). Instead of removing this data, we decided to combine the months together, in this article for all the fitness traits.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">GNM_355</td>
+<td style="text-align: left;">chick mass (May, Day6)</td>
+<td style="text-align: left;">We have combined the means, standard deviations and sample sizes for different months together for this paper. We realised that the sample size was as low as 1 in some cases, with effective sample size being 0.5 which does not allow us to estimate the effect size (SMDH specifically). Instead of removing this data, we decided to combine the months together, in this article for all the fitness traits.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">GNM_355</td>
+<td style="text-align: left;">chick mass (May, Day6)</td>
+<td style="text-align: left;">We have combined the means, standard deviations and sample sizes for different months together for this paper. We realised that the sample size was as low as 1 in some cases, with effective sample size being 0.5 which does not allow us to estimate the effect size (SMDH specifically). Instead of removing this data, we decided to combine the months together, in this article for all the fitness traits.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">GNM_355</td>
+<td style="text-align: left;">chick mass (May, Day12)</td>
+<td style="text-align: left;">We have combined the means, standard deviations and sample sizes for different months together for this paper. We realised that the sample size was as low as 1 in some cases, with effective sample size being 0.5 which does not allow us to estimate the effect size (SMDH specifically). Instead of removing this data, we decided to combine the months together, in this article for all the fitness traits.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">GNM_355</td>
+<td style="text-align: left;">chick mass (May, Day12)</td>
+<td style="text-align: left;">We have combined the means, standard deviations and sample sizes for different months together for this paper. We realised that the sample size was as low as 1 in some cases, with effective sample size being 0.5 which does not allow us to estimate the effect size (SMDH specifically). Instead of removing this data, we decided to combine the months together, in this article for all the fitness traits.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">GNM_355</td>
+<td style="text-align: left;">chick mass (May, Day12)</td>
+<td style="text-align: left;">We have combined the means, standard deviations and sample sizes for different months together for this paper. We realised that the sample size was as low as 1 in some cases, with effective sample size being 0.5 which does not allow us to estimate the effect size (SMDH specifically). Instead of removing this data, we decided to combine the months together, in this article for all the fitness traits.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">GNM_355</td>
+<td style="text-align: left;">chick mass (May, Day18)</td>
+<td style="text-align: left;">We have combined the means, standard deviations and sample sizes for different months together for this paper. We realised that the sample size was as low as 1 in some cases, with effective sample size being 0.5 which does not allow us to estimate the effect size (SMDH specifically). Instead of removing this data, we decided to combine the months together, in this article for all the fitness traits.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">GNM_355</td>
+<td style="text-align: left;">chick mass (May, Day18)</td>
+<td style="text-align: left;">We have combined the means, standard deviations and sample sizes for different months together for this paper. We realised that the sample size was as low as 1 in some cases, with effective sample size being 0.5 which does not allow us to estimate the effect size (SMDH specifically). Instead of removing this data, we decided to combine the months together, in this article for all the fitness traits.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">GNM_355</td>
+<td style="text-align: left;">chick mass (May, Day18)</td>
+<td style="text-align: left;">We have combined the means, standard deviations and sample sizes for different months together for this paper. We realised that the sample size was as low as 1 in some cases, with effective sample size being 0.5 which does not allow us to estimate the effect size (SMDH specifically). Instead of removing this data, we decided to combine the months together, in this article for all the fitness traits.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">GNM_355</td>
+<td style="text-align: left;">chick mass (June, Day6)</td>
+<td style="text-align: left;">We have combined the means, standard deviations and sample sizes for different months together for this paper. We realised that the sample size was as low as 1 in some cases, with effective sample size being 0.5 which does not allow us to estimate the effect size (SMDH specifically). Instead of removing this data, we decided to combine the months together, in this article for all the fitness traits.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">GNM_355</td>
+<td style="text-align: left;">chick mass (June, Day6)</td>
+<td style="text-align: left;">We have combined the means, standard deviations and sample sizes for different months together for this paper. We realised that the sample size was as low as 1 in some cases, with effective sample size being 0.5 which does not allow us to estimate the effect size (SMDH specifically). Instead of removing this data, we decided to combine the months together, in this article for all the fitness traits.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">GNM_355</td>
+<td style="text-align: left;">chick mass (June, Day6)</td>
+<td style="text-align: left;">We have combined the means, standard deviations and sample sizes for different months together for this paper. We realised that the sample size was as low as 1 in some cases, with effective sample size being 0.5 which does not allow us to estimate the effect size (SMDH specifically). Instead of removing this data, we decided to combine the months together, in this article for all the fitness traits.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">GNM_355</td>
+<td style="text-align: left;">chick mass (June, Day12)</td>
+<td style="text-align: left;">We have combined the means, standard deviations and sample sizes for different months together for this paper. We realised that the sample size was as low as 1 in some cases, with effective sample size being 0.5 which does not allow us to estimate the effect size (SMDH specifically). Instead of removing this data, we decided to combine the months together, in this article for all the fitness traits.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">GNM_355</td>
+<td style="text-align: left;">chick mass (June, Day12)</td>
+<td style="text-align: left;">We have combined the means, standard deviations and sample sizes for different months together for this paper. We realised that the sample size was as low as 1 in some cases, with effective sample size being 0.5 which does not allow us to estimate the effect size (SMDH specifically). Instead of removing this data, we decided to combine the months together, in this article for all the fitness traits.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">GNM_355</td>
+<td style="text-align: left;">chick mass (June, Day12)</td>
+<td style="text-align: left;">We have combined the means, standard deviations and sample sizes for different months together for this paper. We realised that the sample size was as low as 1 in some cases, with effective sample size being 0.5 which does not allow us to estimate the effect size (SMDH specifically). Instead of removing this data, we decided to combine the months together, in this article for all the fitness traits.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">GNM_355</td>
+<td style="text-align: left;">chick mass (June, Day18)</td>
+<td style="text-align: left;">We have combined the means, standard deviations and sample sizes for different months together for this paper. We realised that the sample size was as low as 1 in some cases, with effective sample size being 0.5 which does not allow us to estimate the effect size (SMDH specifically). Instead of removing this data, we decided to combine the months together, in this article for all the fitness traits.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">GNM_355</td>
+<td style="text-align: left;">chick mass (June, Day18)</td>
+<td style="text-align: left;">We have combined the means, standard deviations and sample sizes for different months together for this paper. We realised that the sample size was as low as 1 in some cases, with effective sample size being 0.5 which does not allow us to estimate the effect size (SMDH specifically). Instead of removing this data, we decided to combine the months together, in this article for all the fitness traits.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">GNM_355</td>
+<td style="text-align: left;">chick mass (June, Day18)</td>
+<td style="text-align: left;">We have combined the means, standard deviations and sample sizes for different months together for this paper. We realised that the sample size was as low as 1 in some cases, with effective sample size being 0.5 which does not allow us to estimate the effect size (SMDH specifically). Instead of removing this data, we decided to combine the months together, in this article for all the fitness traits.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">GNM_1_Unpublished</td>
+<td style="text-align: left;">Number of green twigs added by parents</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">GNM_1_Unpublished</td>
+<td style="text-align: left;">Number of green twigs added by parents</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">GNM_1_Unpublished</td>
+<td style="text-align: left;">Number of green twigs added by parents</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">GNM_1_Unpublished</td>
+<td style="text-align: left;">Number of green twigs added by parents</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">GNM_1_Unpublished</td>
+<td style="text-align: left;">Number of green twigs added by parents</td>
+<td style="text-align: left;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">GNM_1_Unpublished</td>
+<td style="text-align: left;">Number of green twigs added by parents</td>
+<td style="text-align: left;">NA</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<section id="adding-observation-id-column" class="level3" data-number="2.4.1">
+<h3 data-number="2.4.1" class="anchored" data-anchor-id="adding-observation-id-column"><span class="header-section-number">2.4.1</span> Adding Observation ID column</h3>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a>dataset_after_cleaning <span class="ot">&lt;-</span> dataset_after_cleaning <span class="sc">%&gt;%</span></span>
+<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Observation_ID=</span><span class="fu">row_number</span>(), <span class="at">.before =</span> experiment_ID)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="adding-hypothesis-column" class="level3" data-number="2.4.2">
+<h3 data-number="2.4.2" class="anchored" data-anchor-id="adding-hypothesis-column"><span class="header-section-number">2.4.2</span> Adding Hypothesis column</h3>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a>dataset_after_cleaning <span class="ot">&lt;-</span> dataset_after_cleaning <span class="sc">%&gt;%</span></span>
+<span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Hypothesis=</span> <span class="fu">case_when</span>(</span>
+<span id="cb56-3"><a href="#cb56-3" aria-hidden="true" tabindex="-1"></a>      CH <span class="sc">==</span> <span class="dv">1</span> <span class="sc">&amp;</span> PCH <span class="sc">==</span> <span class="dv">0</span> <span class="sc">~</span> <span class="st">"CH"</span>,   </span>
+<span id="cb56-4"><a href="#cb56-4" aria-hidden="true" tabindex="-1"></a>      CH <span class="sc">==</span> <span class="dv">0</span> <span class="sc">&amp;</span> PCH <span class="sc">==</span> <span class="dv">1</span> <span class="sc">~</span> <span class="st">"PCH"</span>,  </span>
+<span id="cb56-5"><a href="#cb56-5" aria-hidden="true" tabindex="-1"></a>      CH <span class="sc">==</span> <span class="dv">1</span> <span class="sc">&amp;</span> PCH <span class="sc">==</span> <span class="dv">1</span> <span class="sc">~</span> <span class="st">"both"</span>) </span>
+<span id="cb56-6"><a href="#cb56-6" aria-hidden="true" tabindex="-1"></a>    ,<span class="at">.after =</span> PCH)</span>
+<span id="cb56-7"><a href="#cb56-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb56-8"><a href="#cb56-8" aria-hidden="true" tabindex="-1"></a><span class="co">#checked, has no NAs</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<section id="cleaning-type-of-trait-studied" class="level4" data-number="2.4.2.1">
+<h4 data-number="2.4.2.1" class="anchored" data-anchor-id="cleaning-type-of-trait-studied"><span class="header-section-number">2.4.2.1</span> Cleaning Type of trait studied</h4>
+<p>(levels: physiology, morphology, reproduction, behaviour, parasite and pathogenic load, phenology)</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a>dataset_after_cleaning <span class="ot">&lt;-</span> dataset_after_cleaning <span class="sc">%&gt;%</span></span>
+<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">trait_type =</span> <span class="fu">case_when</span>(</span>
+<span id="cb57-3"><a href="#cb57-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_detect</span>(trait_type, <span class="fu">regex</span>(<span class="st">"physiology"</span>, <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) <span class="sc">~</span> <span class="st">"Physiology"</span>,</span>
+<span id="cb57-4"><a href="#cb57-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_detect</span>(trait_type, <span class="fu">regex</span>(<span class="st">"reproduction"</span>, <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) <span class="sc">~</span> <span class="st">"Reproduction"</span>,</span>
+<span id="cb57-5"><a href="#cb57-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_detect</span>(trait_type, <span class="fu">regex</span>(<span class="st">"morphology"</span>, <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) <span class="sc">~</span> <span class="st">"Morphology"</span>,</span>
+<span id="cb57-6"><a href="#cb57-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_detect</span>(trait_type, <span class="fu">regex</span>(<span class="st">"parasite.*pathogenic|parasitic.*pathogenic"</span>, <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) <span class="sc">~</span> <span class="st">"Parasitic_and_pathogenic"</span>,</span>
+<span id="cb57-7"><a href="#cb57-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_detect</span>(trait_type, <span class="fu">regex</span>(<span class="st">"behaviour"</span>, <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) <span class="sc">~</span> <span class="st">"Behaviour"</span>,</span>
+<span id="cb57-8"><a href="#cb57-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_detect</span>(trait_type, <span class="fu">regex</span>(<span class="st">"phenology"</span>, <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) <span class="sc">~</span> <span class="st">"Phenology"</span>,</span>
+<span id="cb57-9"><a href="#cb57-9" aria-hidden="true" tabindex="-1"></a>    <span class="cn">TRUE</span> <span class="sc">~</span> <span class="fu">as.character</span>(trait_type)</span>
+<span id="cb57-10"><a href="#cb57-10" aria-hidden="true" tabindex="-1"></a>  ))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+</section>
+<section id="adding-type-of-parasites" class="level3" data-number="2.4.3">
+<h3 data-number="2.4.3" class="anchored" data-anchor-id="adding-type-of-parasites"><span class="header-section-number">2.4.3</span> Adding Type of parasites</h3>
+<p>(levels: arthropods, micro-organisms)&nbsp;</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a>dataset_after_cleaning <span class="ot">&lt;-</span> dataset_after_cleaning <span class="sc">%&gt;%</span></span>
+<span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">parasite_type=</span> <span class="fu">case_when</span>(</span>
+<span id="cb58-3"><a href="#cb58-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_detect</span>(parasite_type, <span class="fu">regex</span>(<span class="st">"arthropod"</span>, <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) <span class="sc">~</span> <span class="st">"Arthropod"</span>,</span>
+<span id="cb58-4"><a href="#cb58-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_detect</span>(parasite_type, <span class="fu">regex</span>(<span class="st">"micro[- ]?organism|microoragnism"</span>, <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) <span class="sc">~</span> <span class="st">"Micro-organism"</span>,</span>
+<span id="cb58-5"><a href="#cb58-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">is.na</span>(parasite_type) <span class="sc">~</span> <span class="cn">NA_character_</span>,  <span class="co"># Keep NA as it is</span></span>
+<span id="cb58-6"><a href="#cb58-6" aria-hidden="true" tabindex="-1"></a>    <span class="cn">TRUE</span> <span class="sc">~</span> <span class="fu">as.character</span>(parasite_type)    <span class="co"># Retain other values (optional, if needed)</span></span>
+<span id="cb58-7"><a href="#cb58-7" aria-hidden="true" tabindex="-1"></a>  ))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="time-of-addition-of-green-nest-material" class="level3" data-number="2.4.4">
+<h3 data-number="2.4.4" class="anchored" data-anchor-id="time-of-addition-of-green-nest-material"><span class="header-section-number">2.4.4</span> Time of addition of green nest material</h3>
+<p>(levels: before egg hatching, after egg hatching, continuously throughout the nesting phase).</p>
+</section>
+<section id="type-of-experimental-design" class="level3" data-number="2.4.5">
+<h3 data-number="2.4.5" class="anchored" data-anchor-id="type-of-experimental-design"><span class="header-section-number">2.4.5</span> Type of experimental design</h3>
+<p>(levels: 1 = non-aromatic vs.&nbsp;aromatic, 2 = no added material vs.&nbsp;aromatic, 3 = no added material vs.&nbsp;non-aromatic).</p>
+</section>
+<section id="bird-species" class="level3" data-number="2.4.6">
+<h3 data-number="2.4.6" class="anchored" data-anchor-id="bird-species"><span class="header-section-number">2.4.6</span> Bird species</h3>
+<p>(levels: Cyanistes caeruleus, Sturnus unicolor, Tachycineta bicolor, Sturnus vulgaris; note that these levels reflect the list of species studied in our current database, which may increase after updating our search and/or receiving unpublished data from authors)</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb59"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a>dataset_after_cleaning <span class="ot">&lt;-</span> dataset_after_cleaning <span class="sc">%&gt;%</span></span>
+<span id="cb59-2"><a href="#cb59-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">bird_species=</span> <span class="fu">case_when</span>(</span>
+<span id="cb59-3"><a href="#cb59-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_detect</span>(bird_species, <span class="fu">regex</span>(<span class="st">"Cyanistes caeruleus, Parus major"</span>, <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) <span class="sc">~</span> <span class="st">"Cyanistes caeruleus"</span>,</span>
+<span id="cb59-4"><a href="#cb59-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_detect</span>(bird_species, <span class="fu">regex</span>(<span class="st">"Cyanistes caeruleus|Cyanistes_caeruleus"</span>, <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) <span class="sc">~</span> <span class="st">"Cyanistes caeruleus"</span>,</span>
+<span id="cb59-5"><a href="#cb59-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">str_detect</span>(bird_species, <span class="fu">regex</span>(<span class="st">"Sturnus unicolor|Sturnus_unicolor"</span>, <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) <span class="sc">~</span> <span class="st">"Sturnus unicolor"</span>,</span>
+<span id="cb59-6"><a href="#cb59-6" aria-hidden="true" tabindex="-1"></a>        <span class="fu">str_detect</span>(bird_species, <span class="fu">regex</span>(<span class="st">"Sturnus vulgaris|Sturnus_vulgaris"</span>, <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) <span class="sc">~</span> <span class="st">"Sturnus vulgaris"</span>,</span>
+<span id="cb59-7"><a href="#cb59-7" aria-hidden="true" tabindex="-1"></a>    <span class="cn">TRUE</span> <span class="sc">~</span> <span class="fu">as.character</span>(bird_species)</span>
+<span id="cb59-8"><a href="#cb59-8" aria-hidden="true" tabindex="-1"></a>  ))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>Whichever between Cyanistes caeruleus and Parus major is higher.. assign that..</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb60"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a><span class="fu">write.csv</span>(dataset_after_cleaning,<span class="at">file=</span>here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"data/input/dataset_after_cleaning.csv"</span>),<span class="at">row.names =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./intro.html" class="pagination-link" aria-label="About the project">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">About the project</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
