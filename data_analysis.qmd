@@ -1076,12 +1076,13 @@ MR_SMDH_decline_eff <-
 summary(MR_SMDH_decline_eff)
 
 round(r2_ml(MR_SMDH_decline_eff)*100,2)
-SMDH_small_study_bubble<-orchaRd::mod_results(MR_SMDH_small_study,
-                     mod="sqrt_effective_n_inv",
+
+MR_SMDH_decline_effect_bubble<-orchaRd::mod_results(MR_SMDH_decline_eff,
+                     mod="year_MeanCenter",
                      group="paper_ID",
                      weights="prop")
-orchaRd::bubble_plot(SMDH_small_study_bubble,
-                      mod="sqrt_effective_n_inv",
+orchaRd::bubble_plot(MR_SMDH_decline_effect_bubble,
+                      mod="year_MeanCenter",
                      group="paper_ID")
 ```
 

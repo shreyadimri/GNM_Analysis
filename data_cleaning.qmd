@@ -26,7 +26,14 @@ To summarise..
 
 -   We got access to **2 Unpublished datasets (**One was provided by Meinolf on buzzards and another was a Master Thesis project from Adele Menerate's students)
 
-**Importing files after data extraction**
+## What are we doing here?
+
+1.  We import the dataset that we produced after data extraction (3 files for initial data-extraction, 3 for repeat search, 2 unpublished data sets). We merge these datasets..
+2.  We exclude studies that did not meet our inclusion criteria. 17 studies are excluded at the full-text screening stage. 28 studies that form a part of this meta-analysis
+3.  This script was used to clean the names of the fitness proxies (since we extracted them as they were mentioned in the publication, often with the time of data collection eg. chick mass (day 8). These needed to be standardized into similar names.
+4.  
+
+### **Importing files after data extraction**
 
 You can find all the data that is needed for this analysis.. in a folder called **input**. In short, we need the following files to run the data cleaning:
 
@@ -45,16 +52,6 @@ You can find all the data that is needed for this analysis.. in a folder called 
 -   data_extraction_MO_checkedSD.xlsx
 
 -   data_extraction_UnpublishedThesis.xlsx
-
-# What are we doing here?
-
-1.  We import the dataset that we produced after data extraction (3 files for initial data-extraction, 3 for repeat search, 2 unpublished data sets). We merge these datasets..
-2.  We exclude studies that did not meet our inclusion criteria.
-
-# Take home message:
-
-1.  17 studies are excluded at the full-text screening stage
-2.  
 
 ```{r import, warning=FALSE, message=FALSE}
 
@@ -93,7 +90,7 @@ merged_data_extraction<-full_join(set_JMGS,set_SD)%>%full_join(set_TR)%>%full_jo
 
 ```
 
-**Excluded articles**
+### **Excluded articles**
 
 ```{r excluded data}
 #| echo: false
@@ -104,7 +101,7 @@ excluded_papers_no<-length(unique(excluded_dataset$paper_ID))
 
 ```
 
-Number of studies that were excluded from out data extraction process: `r excluded_papers_no` .
+**Number of studies that were excluded from out data extraction process: `r excluded_papers_no`** .
 
 ```{r}
 #| echo: false
@@ -114,7 +111,7 @@ kable(as.data.frame(summary(as.factor(excluded_dataset$fulltext_notes))),
       caption = "Reasons for exclusion")
 ```
 
-**Included articles**
+### **Included articles**
 
 ```{r}
 #| echo: false
@@ -125,7 +122,7 @@ included_papers_no<-length(unique(dataset_after_cleaning$paper_ID))
 
 ```
 
-Number of studies that are included in our meta-analysis so far: `r included_papers_no`
+**Number of studies that are included in our meta-analysis so far: `r included_papers_no`**
 
 ## Proxies of fitness
 
@@ -141,9 +138,203 @@ We extracted the names of the variables that the authors measured as it is. We w
 dataset_after_cleaning$fitness_proxy_cleaned<-dataset_after_cleaning$fitness_proxy
 ```
 
-### Un-categorized variables
+We will clean the names of the fitness proxies but we also made several decisions on the way about what will and will not be included in the meta-analysis. We will try to list down all the decisions that we made along the way about the numerous proxies.. how we categorized what hypothesis they could be considered an evidence for (information on this is contained in a 1(TRUE) and 0(FALSE) format in the variables PCH and CH, ones that are 1 are considered as giving evidence to "Both" of the hypothesis (but maybe also none of those two). They are simply hard to associate with one or the other hypothesis in this case.
 
-#### 1. **Number of nestlings** (different age)
+### Courtship Hypothesis only:
+
+**1. Male and female proportion of visit:**
+
+We will exclude female proportion of visit and female provisioning rate from all our analysis. In the study females add the GNM as noted by the authors (Study ID-GNM_018 in our meta-analysis), it is the male that would/should adjust their investment. One can argue female investment will be an indirect reflection of the male's investment. However, this is very indirect and the direction of this proxy in relation to the GNM addition can be argued both ways. That is, if females use GNM as an honest signal to increase male investment, their own investment would not be directly related to fitness or they would increase investment to compensate for the lack of male investment. Or it would be negatively related to fitness because they invested in bringing in the GNM as well as in higher provisioning.
+
+```{r}
+
+
+dataset_after_cleaning <- dataset_after_cleaning %>%
+mutate(fitness_proxy_cleaned = case_when(
+   str_detect(fitness_proxy, regex("male proportions of visit" , 
+                                   ignore_case = TRUE)) ~ 
+     "male_visit",
+   str_detect(fitness_proxy, regex("female proportions of visit" , 
+                                   ignore_case = TRUE)) ~ 
+     "female_visit",
+    TRUE ~ as.character(fitness_proxy_cleaned)  
+   # Keeps existing values for all other cases
+  ))
+
+
+```
+
+**2. Male and female provisioning**
+
+```{r}
+
+
+dataset_after_cleaning <- dataset_after_cleaning %>%
+mutate(fitness_proxy_cleaned = case_when(
+     str_detect(fitness_proxy, regex("female provisioning rate" , 
+                                   ignore_case = TRUE)) ~ 
+     "female_provisioning_rate",
+   str_detect(fitness_proxy, regex("male provisioning rate" , 
+                                   ignore_case = TRUE)) ~ 
+     "male_provisioning_rate",
+    TRUE ~ as.character(fitness_proxy_cleaned)  
+   # Keeps existing values for all other cases
+  ))
+
+
+```
+
+**3.** **Male food provisioning**
+
+```{r}
+dataset_after_cleaning <- dataset_after_cleaning %>%
+mutate(fitness_proxy_cleaned = case_when(
+   str_detect(fitness_proxy, regex("male food provisioning*" , 
+                                   ignore_case = TRUE)) ~ 
+     "male_provisioning",
+    TRUE ~ as.character(fitness_proxy_cleaned)  
+   # Keeps existing values for all other cases
+  ))
+```
+
+**4.** **Male incubation attendance**
+
+```{r}
+dataset_after_cleaning <- dataset_after_cleaning %>%
+mutate(fitness_proxy_cleaned = case_when(
+   str_detect(fitness_proxy, regex("male incubation attendance*" , 
+                                   ignore_case = TRUE)) ~ 
+     "male_incubation_attendance",
+    TRUE ~ as.character(fitness_proxy_cleaned)  
+   # Keeps existing values for all other cases
+  ))
+
+```
+
+**5.** **Male Risk Taking**
+
+```{r}
+dataset_after_cleaning <- dataset_after_cleaning %>%
+mutate(fitness_proxy_cleaned = case_when(
+   str_detect(fitness_proxy, regex("male risk*" , 
+                                   ignore_case = TRUE)) ~ 
+     "male_risk_taking",
+    TRUE ~ as.character(fitness_proxy_cleaned)  
+   # Keeps existing values for all other cases
+  ))
+```
+
+**6.** **Sex Ratio**
+
+We will be excluding sex ratio as a fitness proxy from our main analysis (@krackow2002). However, we will test this with other similarly marked proxies in a sensitivity analysis.
+
+```{r}
+dataset_after_cleaning <- dataset_after_cleaning %>%
+mutate(fitness_proxy_cleaned = case_when(
+    str_detect(fitness_proxy, regex("Sex ratio offspring*", ignore_case = TRUE))
+    ~ "sex_ratio",    
+   str_detect(fitness_proxy, regex("proportion of males per breeding attempt", 
+                                   ignore_case = TRUE))
+    ~ "sex_ratio",
+    TRUE ~ as.character(fitness_proxy_cleaned)  # Keeps existing values for all other cases
+  ))
+```
+
+**7.** **Female Testosterone**
+
+```{r}
+
+dataset_after_cleaning <- dataset_after_cleaning %>%
+mutate(fitness_proxy_cleaned = case_when(
+   str_detect(fitness_proxy, regex("females' testosterone level*" , 
+                                   ignore_case = TRUE)) ~ 
+     "females_testosterone",
+   str_detect(fitness_proxy, regex("testosterone level*" , 
+                                   ignore_case = TRUE)) ~ 
+     "females_testosterone",
+    TRUE ~ as.character(fitness_proxy_cleaned)  
+   # Keeps existing values for all other cases
+  ))
+```
+
+**8.** **Yolk Hormones**
+
+```{r}
+dataset_after_cleaning <- dataset_after_cleaning %>%
+mutate(fitness_proxy_cleaned = case_when(
+   str_detect(fitness_proxy, regex("Yolk Log T (testosterone)*" , 
+                                   ignore_case = TRUE)) ~ 
+     "yolk_hormones",
+    str_detect(fitness_proxy, regex("Yolk Log A4(androstenedione)*" , 
+                                   ignore_case = TRUE)) ~ 
+     "yolk_hormones",
+    TRUE ~ as.character(fitness_proxy_cleaned)  
+   # Keeps existing values for all other cases
+  ))
+```
+
+**9.** **Courtship Time**
+
+```{r}
+dataset_after_cleaning <- dataset_after_cleaning %>%
+mutate(fitness_proxy_cleaned = case_when(
+   str_detect(fitness_proxy, regex("courtship time*" , 
+                                   ignore_case = TRUE)) ~ 
+     "courtship_time",
+    TRUE ~ as.character(fitness_proxy_cleaned)  
+   # Keeps existing values for all other cases
+  ))
+```
+
+### Both Hypothesis : 
+
+**1.** **Laying Date**
+
+```{r}
+dataset_after_cleaning <- dataset_after_cleaning %>%
+mutate(fitness_proxy_cleaned = case_when(
+    str_detect(fitness_proxy, regex("laying date", ignore_case = TRUE))
+    ~ "laying_date",    
+    str_detect(fitness_proxy, regex("clutch initiation date", ignore_case = TRUE)) 
+    ~ "laying_date",
+      str_detect(fitness_proxy, regex("Onset of Laying", ignore_case = TRUE)) 
+    ~ "laying_date",
+    TRUE ~ as.character(fitness_proxy_cleaned)  # Keeps existing values for all other cases
+  ))
+
+```
+
+**2.** **Hatching Date**
+
+```{r}
+dataset_after_cleaning <- dataset_after_cleaning %>%
+mutate(fitness_proxy_cleaned = case_when(
+    str_detect(fitness_proxy, regex("hatching date", ignore_case = TRUE))
+    ~ "hatching_date",    
+    TRUE ~ as.character(fitness_proxy_cleaned)  # Keeps existing values for all other cases
+  ))
+
+```
+
+**3.** **Clutch size**
+
+```{r}
+dataset_after_cleaning <- dataset_after_cleaning %>%
+mutate(fitness_proxy_cleaned = case_when(
+    str_detect(fitness_proxy, regex("clutch size", 
+                                    ignore_case = TRUE)) ~ "clutch_size",
+    str_detect(fitness_proxy, regex("clutch-size", 
+                                    ignore_case = TRUE)) ~ "clutch_size",
+     str_detect(fitness_proxy, regex("eggslaid", 
+                                     ignore_case = TRUE)) ~ "clutch_size",
+    str_detect(fitness_proxy, regex("Number of eggs", 
+                                     ignore_case = TRUE)) ~ "clutch_size",
+    TRUE ~ as.character(fitness_proxy_cleaned)  
+    # Keeps existing values for all other cases
+  ))
+```
+
+**4. Number of nestlings (different age)**
 
 ```{r}
 
@@ -167,7 +358,7 @@ mutate(fitness_proxy_cleaned = case_when(
 
 ```
 
-#### 2. **Number of fledglings**
+**5. Number of fledglings**
 
 ```{r}
 dataset_after_cleaning <- dataset_after_cleaning %>%
@@ -181,25 +372,7 @@ mutate(fitness_proxy_cleaned = case_when(
   ))
 ```
 
-#### 3. **Chick mass, nestling mass and fledgling mass**
-
-```{r}
-# Checked paper GNM_069 and GNM_349 and the word body mass is used to describe nestlings of 14 days and 17 days respectlively
-dataset_after_cleaning <- dataset_after_cleaning %>%
-mutate(fitness_proxy_cleaned = case_when(
-    str_detect(fitness_proxy, regex("chick mass*", ignore_case = TRUE)) ~ "chick_mass",
-    str_detect(fitness_proxy, regex("chick body mass", ignore_case = TRUE)) ~ "chick_mass",
-     str_detect(fitness_proxy, regex("chickmass", ignore_case = TRUE)) ~ "chick_mass",
-    str_detect(fitness_proxy, regex("fledgling mass", ignore_case = TRUE)) ~ "fledgeling_mass",
-    str_detect(fitness_proxy, regex("fledgling body mass", ignore_case = TRUE)) ~ "fledgeling_mass",str_detect(fitness_proxy, regex("nestling mass", ignore_case = TRUE)) ~ "nestling_mass",
-    str_detect(fitness_proxy, regex("nestlings mass", ignore_case = TRUE)) ~ "nestling_mass",
-    str_detect(fitness_proxy, regex("nestling weight", ignore_case = TRUE)) ~ "nestling_mass",    str_detect(fitness_proxy, regex("body mass", ignore_case = TRUE)) ~ "nestling_mass",
-    TRUE ~ as.character(fitness_proxy_cleaned)  
-    # Keeps existing values for all other cases
-  ))
-```
-
-#### 4. **Nestling survival rate**
+**6. Nestling survival rate**
 
 ```{r}
 
@@ -215,7 +388,7 @@ mutate(fitness_proxy_cleaned = case_when(
 
 ```
 
-#### **5. Recruitment probability**
+**7. Recruitment probability**
 
 ```{r}
 
@@ -231,7 +404,7 @@ mutate(fitness_proxy_cleaned = case_when(
 
 ```
 
-#### 6. **Hatching success**
+8\. **Hatching success**
 
 ```{r}
 dataset_after_cleaning <- dataset_after_cleaning %>%
@@ -245,7 +418,7 @@ mutate(fitness_proxy_cleaned = case_when(
   ))
 ```
 
-#### 7. **Fledgling success**
+**9.** **Fledgling success**
 
 ```{r}
 dataset_after_cleaning <- dataset_after_cleaning %>%
@@ -259,7 +432,7 @@ mutate(fitness_proxy_cleaned = case_when(
   ))
 ```
 
-#### 7. **Reproductive success**
+**10.** **Reproductive success**
 
 ```{r}
 dataset_after_cleaning <- dataset_after_cleaning %>%
@@ -272,7 +445,7 @@ mutate(fitness_proxy_cleaned = case_when(
 
 ```
 
-#### 8. **Nest mortality**
+11\. **Nest mortality**
 
 ```{r}
 dataset_after_cleaning <- dataset_after_cleaning %>%
@@ -285,20 +458,7 @@ mutate(fitness_proxy_cleaned = case_when(
 
 ```
 
-#### 9. **Male and female dispersal distance**
-
-```{r}
-dataset_after_cleaning <- dataset_after_cleaning %>%
-mutate(fitness_proxy_cleaned = case_when(
-    str_detect(fitness_proxy, regex("dispersal distance (meters) males*", ignore_case = TRUE))
-    ~ "dispersal_distance_males",    
-    str_detect(fitness_proxy, regex("dispersal distance (meters) females*", ignore_case = TRUE)) 
-    ~ "dispersal_distance_females",
-    TRUE ~ as.character(fitness_proxy_cleaned)  # Keeps existing values for all other cases
-  ))
-```
-
-#### 10. Mouth colouration
+**12. Mouth colouration**
 
 ```{r}
 
@@ -320,137 +480,20 @@ mutate(fitness_proxy_cleaned = case_when(
 
 ```
 
-### For variables that fit courtship hypothesis
-
-#### **1. Male and female proportion of visit**
-
-```{r}
-
-
-dataset_after_cleaning <- dataset_after_cleaning %>%
-mutate(fitness_proxy_cleaned = case_when(
-   str_detect(fitness_proxy, regex("male proportions of visit" , 
-                                   ignore_case = TRUE)) ~ 
-     "male_visit",
-   str_detect(fitness_proxy, regex("female proportions of visit" , 
-                                   ignore_case = TRUE)) ~ 
-     "female_visit",
-    TRUE ~ as.character(fitness_proxy_cleaned)  
-   # Keeps existing values for all other cases
-  ))
-
-
-```
-
-#### **2. Male and female provisioning**
-
-```{r}
-
-
-dataset_after_cleaning <- dataset_after_cleaning %>%
-mutate(fitness_proxy_cleaned = case_when(
-     str_detect(fitness_proxy, regex("female provisioning rate" , 
-                                   ignore_case = TRUE)) ~ 
-     "female_provisioning_rate",
-   str_detect(fitness_proxy, regex("male provisioning rate" , 
-                                   ignore_case = TRUE)) ~ 
-     "male_provisioning_rate",
-    TRUE ~ as.character(fitness_proxy_cleaned)  
-   # Keeps existing values for all other cases
-  ))
-
-
-```
-
-#### 3. **Male food provisioning**
+**13. Male and female dispersal distance**
 
 ```{r}
 dataset_after_cleaning <- dataset_after_cleaning %>%
 mutate(fitness_proxy_cleaned = case_when(
-   str_detect(fitness_proxy, regex("male food provisioning*" , 
-                                   ignore_case = TRUE)) ~ 
-     "male_provisioning",
-    TRUE ~ as.character(fitness_proxy_cleaned)  
-   # Keeps existing values for all other cases
+    str_detect(fitness_proxy, regex("dispersal distance (meters) males*", ignore_case = TRUE))
+    ~ "dispersal_distance_males",    
+    str_detect(fitness_proxy, regex("dispersal distance (meters) females*", ignore_case = TRUE)) 
+    ~ "dispersal_distance_females",
+    TRUE ~ as.character(fitness_proxy_cleaned)  # Keeps existing values for all other cases
   ))
 ```
 
-#### 4. **Male incubation attendance**
-
-```{r}
-dataset_after_cleaning <- dataset_after_cleaning %>%
-mutate(fitness_proxy_cleaned = case_when(
-   str_detect(fitness_proxy, regex("male incubation attendance*" , 
-                                   ignore_case = TRUE)) ~ 
-     "male_incubation_attendance",
-    TRUE ~ as.character(fitness_proxy_cleaned)  
-   # Keeps existing values for all other cases
-  ))
-
-```
-
-#### 5. **Male Risk Taking**
-
-```{r}
-dataset_after_cleaning <- dataset_after_cleaning %>%
-mutate(fitness_proxy_cleaned = case_when(
-   str_detect(fitness_proxy, regex("male risk*" , 
-                                   ignore_case = TRUE)) ~ 
-     "male_risk_taking",
-    TRUE ~ as.character(fitness_proxy_cleaned)  
-   # Keeps existing values for all other cases
-  ))
-```
-
-#### 6. **Female Testosterone**
-
-```{r}
-
-dataset_after_cleaning <- dataset_after_cleaning %>%
-mutate(fitness_proxy_cleaned = case_when(
-   str_detect(fitness_proxy, regex("females' testosterone level*" , 
-                                   ignore_case = TRUE)) ~ 
-     "females_testosterone",
-   str_detect(fitness_proxy, regex("testosterone level*" , 
-                                   ignore_case = TRUE)) ~ 
-     "females_testosterone",
-    TRUE ~ as.character(fitness_proxy_cleaned)  
-   # Keeps existing values for all other cases
-  ))
-```
-
-#### 7. **Courtship Time**
-
-```{r}
-dataset_after_cleaning <- dataset_after_cleaning %>%
-mutate(fitness_proxy_cleaned = case_when(
-   str_detect(fitness_proxy, regex("courtship time*" , 
-                                   ignore_case = TRUE)) ~ 
-     "courtship_time",
-    TRUE ~ as.character(fitness_proxy_cleaned)  
-   # Keeps existing values for all other cases
-  ))
-```
-
-#### 8. **Clutch size**
-
-```{r}
-dataset_after_cleaning <- dataset_after_cleaning %>%
-mutate(fitness_proxy_cleaned = case_when(
-    str_detect(fitness_proxy, regex("clutch size", 
-                                    ignore_case = TRUE)) ~ "clutch_size",
-    str_detect(fitness_proxy, regex("clutch-size", 
-                                    ignore_case = TRUE)) ~ "clutch_size",
-     str_detect(fitness_proxy, regex("eggslaid", 
-                                     ignore_case = TRUE)) ~ "clutch_size",
-    str_detect(fitness_proxy, regex("Number of eggs", 
-                                     ignore_case = TRUE)) ~ "clutch_size",
-    TRUE ~ as.character(fitness_proxy_cleaned)  
-    # Keeps existing values for all other cases
-  ))
-```
-
-#### 10. **Egg Size**
+**14. Egg Size**
 
 ```{r}
 dataset_after_cleaning <- dataset_after_cleaning %>%
@@ -463,51 +506,69 @@ mutate(fitness_proxy_cleaned = case_when(
   ))
 ```
 
-#### 11. **Laying Date**
+**15. Chick mass, nestling mass and fledgling mass**
 
 ```{r}
+# Checked paper GNM_069 and GNM_349 and the word body mass is used to describe nestlings of 14 days and 17 days respectlively
 dataset_after_cleaning <- dataset_after_cleaning %>%
 mutate(fitness_proxy_cleaned = case_when(
-    str_detect(fitness_proxy, regex("laying date", ignore_case = TRUE))
-    ~ "laying_date",    
-    str_detect(fitness_proxy, regex("clutch initiation date", ignore_case = TRUE)) 
-    ~ "laying_date",
-      str_detect(fitness_proxy, regex("Onset of Laying", ignore_case = TRUE)) 
-    ~ "laying_date",
-    TRUE ~ as.character(fitness_proxy_cleaned)  # Keeps existing values for all other cases
+    str_detect(fitness_proxy, regex("chick mass*", ignore_case = TRUE)) ~ "chick_mass",
+    str_detect(fitness_proxy, regex("chick body mass", ignore_case = TRUE)) ~ "chick_mass",
+     str_detect(fitness_proxy, regex("chickmass", ignore_case = TRUE)) ~ "chick_mass",
+    str_detect(fitness_proxy, regex("fledgling mass", ignore_case = TRUE)) ~ "fledgeling_mass",
+    str_detect(fitness_proxy, regex("fledgling body mass", ignore_case = TRUE)) ~ "fledgeling_mass",str_detect(fitness_proxy, regex("nestling mass", ignore_case = TRUE)) ~ "nestling_mass",
+    str_detect(fitness_proxy, regex("nestlings mass", ignore_case = TRUE)) ~ "nestling_mass",
+    str_detect(fitness_proxy, regex("nestling weight", ignore_case = TRUE)) ~ "nestling_mass",    str_detect(fitness_proxy, regex("body mass", ignore_case = TRUE)) ~ "nestling_mass",
+    TRUE ~ as.character(fitness_proxy_cleaned)  
+    # Keeps existing values for all other cases
   ))
-
 ```
 
-#### 12. **Hatching Date**
+**16. Nestling Size**
 
 ```{r}
 dataset_after_cleaning <- dataset_after_cleaning %>%
 mutate(fitness_proxy_cleaned = case_when(
-    str_detect(fitness_proxy, regex("hatching date", ignore_case = TRUE))
-    ~ "hatching_date",    
-    TRUE ~ as.character(fitness_proxy_cleaned)  # Keeps existing values for all other cases
+   str_detect(fitness_proxy, regex("nestling size*" , ignore_case = TRUE)) 
+   ~ "nestling_size",
+   TRUE ~ as.character(fitness_proxy_cleaned)  
+   # Keeps existing values for all other cases
   ))
-
 ```
 
-#### 13. **Yolk Hormones**
+**17. Nestling Tarsus Length**
 
 ```{r}
+
+#checked paper GNM_069 word tarsus length is used to describe nestlings of 14 days
+
 dataset_after_cleaning <- dataset_after_cleaning %>%
 mutate(fitness_proxy_cleaned = case_when(
-   str_detect(fitness_proxy, regex("Yolk Log T (testosterone)*" , 
-                                   ignore_case = TRUE)) ~ 
-     "yolk_hormones",
-    str_detect(fitness_proxy, regex("Yolk Log A4(androstenedione)*" , 
-                                   ignore_case = TRUE)) ~ 
-     "yolk_hormones",
+   str_detect(fitness_proxy, regex("nestling tarsus length" , ignore_case = TRUE)) ~ "nestling_tarsus_length",
+      str_detect(fitness_proxy,"tarsal length") ~ "nestling_tarsus_length",
+   str_detect(fitness_proxy,"Tarsus Length*") ~ "nestling_tarsus_length",
+   
     TRUE ~ as.character(fitness_proxy_cleaned)  
    # Keeps existing values for all other cases
   ))
 ```
 
-#### 14. **Male and female body size**
+**18. Nestling Wing Length**
+
+```{r}
+dataset_after_cleaning <- dataset_after_cleaning %>%
+mutate(fitness_proxy_cleaned = case_when(
+   str_detect(fitness_proxy, regex("nestling wing*" , ignore_case = TRUE)) 
+   ~ "nestling_wing_length",
+   str_detect(fitness_proxy, regex("length of primary flight feather length of nestlings at day 12" , 
+                                   ignore_case = TRUE)) 
+   ~ "nestling_wing_length",
+   TRUE ~ as.character(fitness_proxy_cleaned)  
+   # Keeps existing values for all other cases
+  ))
+```
+
+**19. Male and female body size**
 
 ```{r}
 dataset_after_cleaning <- dataset_after_cleaning %>%
@@ -521,7 +582,7 @@ mutate(fitness_proxy_cleaned = case_when(
 
 ```
 
-#### 15. **Male and female mass**
+**20.** **Male and female mass**
 
 ```{r}
 dataset_after_cleaning <- dataset_after_cleaning %>%
@@ -535,7 +596,7 @@ mutate(fitness_proxy_cleaned = case_when(
 
 ```
 
-#### 16. **Male and female wing length**
+**21.** **Male and female wing length**
 
 ```{r}
 dataset_after_cleaning <- dataset_after_cleaning %>%
@@ -548,7 +609,7 @@ mutate(fitness_proxy_cleaned = case_when(
   ))
 ```
 
-#### 17. **Male and female tarsus length**
+**21.** **Male and female tarsus length**
 
 ```{r}
 dataset_after_cleaning <- dataset_after_cleaning %>%
@@ -561,23 +622,23 @@ mutate(fitness_proxy_cleaned = case_when(
   ))
 ```
 
-#### 18. **Sex Ratio**
+**22. Female body condition (Tarsus/wing)**
+
+Here the authors have studied the effect of parasite on he adult female (yearlings) measured at two time point to understand how the parasite load effects the adults in the nest (GNM_101)
 
 ```{r}
 dataset_after_cleaning <- dataset_after_cleaning %>%
 mutate(fitness_proxy_cleaned = case_when(
-    str_detect(fitness_proxy, regex("Sex ratio offspring*", ignore_case = TRUE))
-    ~ "sex_ratio",    
-   str_detect(fitness_proxy, regex("proportion of males per breeding attempt", 
-                                   ignore_case = TRUE))
-    ~ "sex_ratio",
-    TRUE ~ as.character(fitness_proxy_cleaned)  # Keeps existing values for all other cases
+   str_detect(fitness_proxy, regex("female body condition*" , ignore_case = TRUE)) 
+   ~ "female_body_condition",
+   TRUE ~ as.character(fitness_proxy_cleaned)  
+   # Keeps existing values for all other cases
   ))
 ```
 
 ### For variables that fit Parental care hypothesis:
 
-### 1. **Number of mites**
+1\. **Number of mites**
 
 ```{r}
 dataset_after_cleaning <- dataset_after_cleaning %>%
@@ -592,7 +653,7 @@ mutate(fitness_proxy_cleaned = case_when(
   ))
 ```
 
-#### 3. **Number of fleas**
+**3.** **Number of fleas**
 
 ```{r}
 dataset_after_cleaning <- dataset_after_cleaning %>%
@@ -606,7 +667,7 @@ mutate(fitness_proxy_cleaned = case_when(
   ))
 ```
 
-#### 4. **Ticks Load**
+**4.** **Ticks Load**
 
 ```{r}
 dataset_after_cleaning <- dataset_after_cleaning %>%
@@ -741,8 +802,6 @@ mutate(fitness_proxy_cleaned = case_when(
   ))
 ```
 
-### For Variables that fit Drug Hypothesis + Nest Protection (Parental care)
-
 #### 1. **Haemoglobin Measure**
 
 Hematocrit level is combined here with haemoglobin concentration as "hemoglobin_measure". Hematocrit is measured as a percentage as compared to Haemoglobin which is a w/V concentration.
@@ -777,38 +836,6 @@ mutate(fitness_proxy_cleaned = case_when(
   ))
 ```
 
-#### **3. Nestling Tarsus Length**
-
-```{r}
-
-#checked paper GNM_069 word tarsus length is used to describe nestlings of 14 days
-
-dataset_after_cleaning <- dataset_after_cleaning %>%
-mutate(fitness_proxy_cleaned = case_when(
-   str_detect(fitness_proxy, regex("nestling tarsus length" , ignore_case = TRUE)) ~ "nestling_tarsus_length",
-      str_detect(fitness_proxy,"tarsal length") ~ "nestling_tarsus_length",
-   str_detect(fitness_proxy,"Tarsus Length*") ~ "nestling_tarsus_length",
-   
-    TRUE ~ as.character(fitness_proxy_cleaned)  
-   # Keeps existing values for all other cases
-  ))
-```
-
-#### **4. Nestling Wing Length**
-
-```{r}
-dataset_after_cleaning <- dataset_after_cleaning %>%
-mutate(fitness_proxy_cleaned = case_when(
-   str_detect(fitness_proxy, regex("nestling wing*" , ignore_case = TRUE)) 
-   ~ "nestling_wing_length",
-   str_detect(fitness_proxy, regex("length of primary flight feather length of nestlings at day 12" , 
-                                   ignore_case = TRUE)) 
-   ~ "nestling_wing_length",
-   TRUE ~ as.character(fitness_proxy_cleaned)  
-   # Keeps existing values for all other cases
-  ))
-```
-
 #### **5. Nestling Immunity**
 
 ```{r}
@@ -820,18 +847,6 @@ mutate(fitness_proxy_cleaned = case_when(
    ~ "nestling_immunity",
    str_detect(fitness_proxy, regex("Phytohaemagglutinin*" , ignore_case = TRUE)) 
    ~ "nestling_immunity",
-   TRUE ~ as.character(fitness_proxy_cleaned)  
-   # Keeps existing values for all other cases
-  ))
-```
-
-#### **6. Nestling Size**
-
-```{r}
-dataset_after_cleaning <- dataset_after_cleaning %>%
-mutate(fitness_proxy_cleaned = case_when(
-   str_detect(fitness_proxy, regex("nestling size*" , ignore_case = TRUE)) 
-   ~ "nestling_size",
    TRUE ~ as.character(fitness_proxy_cleaned)  
    # Keeps existing values for all other cases
   ))
@@ -870,20 +885,6 @@ dataset_after_cleaning <- dataset_after_cleaning %>%
 mutate(fitness_proxy_cleaned = case_when(
    str_detect(fitness_proxy, regex("meandevoscore*" , ignore_case = TRUE)) 
    ~ "clutch_development_score",
-   TRUE ~ as.character(fitness_proxy_cleaned)  
-   # Keeps existing values for all other cases
-  ))
-```
-
-#### **10. Female body condition (Tarsus/wing)**
-
-Here the authors have studied the effect of parasite on he adult female (yearlings) measured at two time point to understand how the parasite load effects the adults in the nest (GNM_101)
-
-```{r}
-dataset_after_cleaning <- dataset_after_cleaning %>%
-mutate(fitness_proxy_cleaned = case_when(
-   str_detect(fitness_proxy, regex("female body condition*" , ignore_case = TRUE)) 
-   ~ "female_body_condition",
    TRUE ~ as.character(fitness_proxy_cleaned)  
    # Keeps existing values for all other cases
   ))
