@@ -143,7 +143,7 @@ v_lnrr_laj <- function(cv1_2, cv2_2, n1, n2,  taylor=TRUE){
 dataset_analysis<-dataset_after_cleaning%>%
    filter(proxy_decision != "check")
 
-#check what is excluded (as of now 19 rows are excluded)
+#check what is excluded (as of now 2 rows are excluded)
 excluded_rows<- anti_join(dataset_after_cleaning, dataset_analysis)
 
 
@@ -158,7 +158,6 @@ For comparisons involving the shared control or treatment groups across multiple
 dataset_analysis<-dataset_analysis%>%
   mutate(effective_n_experiment=(n_experiment/shared_experiment),.after=n_experiment)%>%
   mutate(effective_n_control=(n_control/shared_control),.after=n_control)
-
 ```
 
 Checking the range of effective sample size in our dataset
@@ -176,7 +175,7 @@ dataset_analysis%>%
 We have some NA and some values of effective sample size 1 and below.. lets see where this is
 
 ```{r}
-dataset_analysis%>%
+low_sample<-dataset_analysis%>%
   filter(effective_n_control<2 | effective_n_experiment<2)
 ```
 
@@ -210,9 +209,10 @@ Some checks for the value of mean and SD
 # contains_NA<-dataset_analysis%>%
 # filter(is.na(measure_central_tendency_experiment)|is.na(measure_dispersion_experiment))
 
-# 13 rows contain NA and I checked them manually, everything looks okay. 
+# 24 rows contain NA and I checked them manually, everything looks okay. 
 # - 4 rows contain only statistical test values and 
-# - 9 are missing data that authors did not provide for which we will use 0 as effect size. 
+# - 4 rows contain values for contingency tables only
+# - 16 are missing data that authors did not provide for which we will use 0 as effect size. 
 ```
 
 ### Preparing Random Effects
@@ -266,7 +266,7 @@ dataset_analysis<- dataset_analysis %>%
     geary_res
 ```
 
-88 observations fail Geary's test
+**48 observations fail Geary's test**
 
 ### No effect size provided
 
@@ -274,7 +274,8 @@ We will calculate the mean trait values by group (for now I use the mean of both
 
 ```{r}
 # To calculate means by groups
-trait_mean<- dataset_analysis%>%group_by(trait_type)%>%
+trait_mean<- dataset_analysis%>%
+  group_by(trait_type)%>%
   summarise(
     cumulative_mean = mean (
       c(measure_central_tendency_experiment,measure_central_tendency_control),
@@ -300,38 +301,48 @@ dataset_analysis<-dataset_analysis%>%
 
 ```
 
+### Excluding proxies that can only be included in SMDH
+
+```{r}
+dataset_lnRR<-dataset_analysis%>%
+  filter(proxy_decision !="contingency table")%>%
+  filter(proxy_decision!= "SMDH only")
+
+ # (as of now 8 rows are excluded that need to be calculated manually and added)
+```
+
 ```{r}
 
 # Using missing-cases method approach as suggested by Nakagawa 2022 : Online tutorial - 
 #  https://alistairmcnairsenior.github.io/Miss_SD_Sim/
 
 # First calculate CV on missing data set. Note missing data will be ignored
-    dataset_analysis <- dataset_analysis %>%
+    dataset_lnRR <- dataset_lnRR %>%
       mutate(cv_Control = na_if(sd_control/measure_central_tendency_control, Inf),
              cv_Experimental = na_if(sd_experiment/measure_central_tendency_experiment, Inf))
     
 # Calculate the average between study CV, which will replace missing values.
-    dataset_analysis <- cv_avg(x = measure_central_tendency_experiment, 
+    dataset_lnRR <- cv_avg(x = measure_central_tendency_experiment, 
                                 sd = sd_experiment,
                             n = effective_n_experiment, 
                             group = paper_ID, 
                             label = "1",
-                             data = dataset_analysis)
-    dataset_analysis <- cv_avg(measure_central_tendency_control, 
+                             data = dataset_lnRR)
+    dataset_lnRR <- cv_avg(measure_central_tendency_control, 
                                 sd = sd_control,
                             n = effective_n_control, 
                             group = paper_ID, 
                             label = "2",
-                             data = dataset_analysis)
+                             data = dataset_lnRR)
 
   
 # Use weighted mean CV in replacement for where CV's are missing. Otherwise, calculate CV^2 of data that is known.
-   dataset_analysis  <- dataset_analysis %>%
+   dataset_lnRR  <- dataset_lnRR %>%
               mutate(cv2_cont_new = if_else(is.na(cv_Control),      b_CV2_2, cv_Control^2),
                      cv2_expt_new = if_else(is.na(cv_Experimental), b_CV2_1, cv_Experimental^2))
 
 # Now calculate new yi and vi, called lnrr_laj & v_lnrr_laj, respectively. This uses either the between individual CV^2 when missing or normal CV^2 when not missing.
-    dataset_analysis  <- dataset_analysis %>%
+    dataset_lnRR  <- dataset_lnRR %>%
               mutate(lnrr_laj = lnrr_laj(m1 = measure_central_tendency_experiment,
                                          m2 = measure_central_tendency_control,
                                          cv1_2 = cv2_expt_new, cv2_2 = cv2_cont_new,
@@ -343,13 +354,8 @@ dataset_analysis<-dataset_analysis%>%
                                            n2 = effective_n_control))
     
 
-# We have added 16 zeros to the dataset
-# 
-# dataset_zeroES<-dataset_analysis %>%
-#   filter(proxy_comment == "use 0 as ES" & !is.na(proxy_comment))
-```
 
-### 
+```
 
 # Calculate lnRR
 
@@ -359,19 +365,14 @@ Since lnRR can only be calculated for ratio scale data (i.e., data with a true z
 
 ```{r for lnRR}
 
-dataset_lnRR<-dataset_analysis
-
-#check what is excluded i.e. flagged or for SMDH only (as of now 22 rows are excluded)
-# excluded_rows<- anti_join(dataset_analysis, dataset_lnRR)
-
-
 # selecting dataset where the values of are negative for mean i.e. not ratio scale data
+temp<-dataset_lnRR #later to check what is getting excluded
 dataset_lnRR<-dataset_lnRR%>%
   filter(measure_central_tendency_experiment>=0 | is.na(measure_central_tendency_experiment))%>%
   filter(measure_central_tendency_control>=0 | is.na(measure_central_tendency_experiment))
 
-#check what is excluded, 7 values that have a negative mean/SD
-# excluded_rows <- anti_join(dataset_analysis, dataset_lnRR)
+#check what is excluded, 10 values that have a negative mean/SD
+excluded_rows <- anti_join(temp, dataset_lnRR)
 # check GNM_069 telomere dynamic 
 
 
@@ -404,8 +405,6 @@ dataset_lnRR<-dataset_lnRR%>%
     lnRR_variance),)%>%
   select(-c(v_lnrr_laj,lnrr_laj,cv2_expt_new,cv2_cont_new,b_CV2_2,b_CV2_1,cv_Experimental,cv_Control))
 
-dataset_analysis<-dataset_analysis%>%
-    select(-c(v_lnrr_laj,lnrr_laj,cv2_expt_new,cv2_cont_new,b_CV2_2,b_CV2_1,cv_Experimental,cv_Control))
 
 ```
 
@@ -585,9 +584,6 @@ write.csv(dataset_lnRR,file=here::here("data/output/dataset_lnRR.csv"),row.names
 ```{r}
 dataset_SMDH<-dataset_analysis
 
-# selecting dataset which are not flagged
-
-  
 dataset_SMDH<- escalc(measure = "SMD", 
               vtype= "LS",
                         n1i = effective_n_experiment, 
@@ -602,13 +598,57 @@ dataset_SMDH<- escalc(measure = "SMD",
                         add.measure = FALSE,
                         append = TRUE)
 
+# For cases when authors reported that there was no effect of the treatment but the data (means, test statistics or effect size) was not reported.
 
 dataset_SMDH <- dataset_SMDH %>%
   mutate(SMDH = if_else(proxy_comment == "use 0 as ES" & !is.na(proxy_comment), (measure_central_tendency_experiment-measure_central_tendency_control), SMDH))%>%
   mutate(SMDH_variance = if_else(proxy_comment == "use 0 as ES" & !is.na(proxy_comment), ((effective_n_experiment+effective_n_control)/(effective_n_experiment*effective_n_control)), SMDH_variance))
 
+# For cases when the data is reported as a contingency table. In these cases we will calculate the Odds ratio and convert it to SMD..
+contingency_table<-dataset_SMDH%>%filter(proxy_decision=="contingency table")
 
-# 4 effect size where SMDH needs to be estimated from test statistics and 9 from GNM_355 where repeated estimates over days for haemoglobin are present and I cannot combine them as I did for chick mass over months.. since the sample is the same and these are the repeated measures of the sample sample.
+unique(contingency_table$fitness_proxy)
+# We have nests with complete reproductive success (%)..
+
+# Calculate Odds Ratio (OR) and Log Odds Ratio (lnOR)
+
+# IMPORTANT NOTE: For calculation from contingency tables, the measure of central tendency is used to store value of percentage of success reported. It is not a measure of central tendency. 
+
+contingency_table <- contingency_table %>%
+  mutate(
+    # Calculate the number of successes and failures for experiment and control groups
+    success_experiment = round((measure_central_tendency_experiment / 100) * n_experiment),
+    failure_experiment = n_experiment - success_experiment,
+    success_control = round((measure_central_tendency_control / 100) * n_control),
+    failure_control = n_control - success_control,
+    # Calculate the Odds Ratio (OR)
+    OR = (success_experiment*failure_control)/ 
+         (success_control*failure_experiment),
+    # Calculate Log Odds Ratio (lnOR)
+    lnOR = log(OR),
+    # Calculate Variance of Log Odds Ratio (lnOR)
+    VlnOR = (1/success_experiment/2) + (1/failure_experiment/2) + 
+            (1/success_control/2) + (1/failure_control/2),
+        # Convert Log Odds Ratio (lnOR) to Standardized Mean Difference (SMD)
+    SMDH = (lnOR * sqrt(3)) / pi,
+    # Convert variance of lnOR to Variance of SMDH
+    SMDH_variance = (3*VlnOR)/(pi^2)
+  )
+
+# Update SMDH and SMDH_variance based on Observation_ID
+dataset_SMDH <- rows_update(
+  x = dataset_SMDH,           # Target dataset to update
+  y = contingency_table %>% 
+        select(Observation_ID, SMDH, SMDH_variance), # Updates from contingency_table
+  by = "Observation_ID"       # Match on Observation_ID
+)
+
+# 4 effect size where SMDH needs to be estimated from test statistics and
+stats_reported<-dataset_SMDH%>%filter(proxy_decision=="SMDH only")
+
+
+
+# 9 from GNM_355 where repeated estimates over days for haemoglobin are present and I cannot combine them as I did for chick mass over months.. since the sample is the same and these are the repeated measures of the same sample.
 x=dataset_SMDH%>%filter(is.na(SMDH))
 
 # For now I am removing the NA values..

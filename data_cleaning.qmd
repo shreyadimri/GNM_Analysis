@@ -28,7 +28,7 @@ To summarise..
 
 **Importing files after data extraction**
 
-You can. find all the data that is needed for this analysis.. in a folder called **input**. In short, we need the following files to run the data cleaning:
+You can find all the data that is needed for this analysis.. in a folder called **input**. In short, we need the following files to run the data cleaning:
 
 -   data_extraction_setJMGS_checkedSD.xlsx
 
@@ -45,6 +45,16 @@ You can. find all the data that is needed for this analysis.. in a folder called
 -   data_extraction_MO_checkedSD.xlsx
 
 -   data_extraction_UnpublishedThesis.xlsx
+
+# What are we doing here?
+
+1.  We import the dataset that we produced after data extraction (3 files for initial data-extraction, 3 for repeat search, 2 unpublished data sets). We merge these datasets..
+2.  We exclude studies that did not meet our inclusion criteria.
+
+# Take home message:
+
+1.  17 studies are excluded at the full-text screening stage
+2.  
 
 ```{r import, warning=FALSE, message=FALSE}
 
@@ -565,9 +575,9 @@ mutate(fitness_proxy_cleaned = case_when(
   ))
 ```
 
-### For variables that fit nest protection hypothesis:
+### For variables that fit Parental care hypothesis:
 
-#### 1. **Number of mites**
+### 1. **Number of mites**
 
 ```{r}
 dataset_after_cleaning <- dataset_after_cleaning %>%

@@ -594,7 +594,8 @@ MR_lnRR_trait_plot <-
 ```{r}
 # selecting dataset which are not flagged
 dataset_SMDH<-dataset_SMDH%>%
-   filter(proxy_decision == "include")
+   filter(proxy_decision != "flag")%>%
+  filter(proxy_decision != "sensitivity-analysis")
 
 ```
 
@@ -615,13 +616,14 @@ VCV_SMDH <- vcalc(vi = SMDH_variance,
                   data = dataset_SMDH,
                   rho = 0.5 # assuming that the effect sizes within the same study are correlated with rho = 0.5
                   )
+
 ```
 
 The MLMA using SMDH as the effect size measure incorporate the imputed sampling variance
 
 ```{r}
 
-MLMA_SMDH_VCV<- rma.mv(yi = SMDH_sign, # specify lnRR as the effect size measure;
+MLMA_SMDH_VCV<- rma.mv(yi = SMDH_sign, # specify SMDH as the effect size measure;
                     V = VCV_SMDH, # specify lnRR's sampling variance-covariance matrix;
                     mods = ~ 1,
                     random = list(~ 1 | paper_ID,
@@ -731,7 +733,7 @@ MR_SMDH_hypothesis <-
                   control = list(optimizer="optim"),
                   data = dataset_SMDH)
 
-# save(MR_lnRR_hypothesis, file = here::here("GNM/figures/MR_lnRR_hypothesis.Rdata"))
+# save(MR_SMDH_hypothesis, file = here::here("GNM/figures/MR_lnRR_hypothesis.Rdata"))
 ```
 
 ```{r Plot meta-regression on hypothesis SMDH}
@@ -780,9 +782,9 @@ VCV_SMDH_parasite <- vcalc(vi = SMDH_variance,
                     mods = ~ - 1 + parasite_type,
                     random = list(~ 1 | paper_ID,
                                   ~ 1 | Observation_ID,
-                                  ~ 1 | experiment_ID,
-                                  ~ 1 | group_ID,
-                                  ~ 1 | repeated_trait_ID,
+                                  ~ 1 | experiment_ID_coded,
+                                  ~ 1 | group_ID_coded,
+                                  ~ 1 | repeated_trait_ID_coded,
                                   ~ 1 | bird_species),
                     method = "REML",
                    test = "t",
@@ -824,7 +826,8 @@ VCV_SMDH_parasite <- vcalc(vi = SMDH_variance,
 ```{r}
 # This analysis only includes dataset that has a proxy relating to comaparision type
 dataset_SMDH_design <- dataset_SMDH %>%
-  filter(!is.na(comparision_type))
+  filter(!is.na(comparision_type))%>%
+  mutate(comparision_type= as.factor(comparision_type))
 
 VCV_SMDH_design <- vcalc(vi = SMDH_variance,
                   cluster = paper_ID,
@@ -839,9 +842,9 @@ MR_SMDH_design <-
                     mods = ~ - 1 + comparision_type,
                     random = list(~ 1 | paper_ID,
                                   ~ 1 | Observation_ID,
-                                  ~ 1 | experiment_ID,
-                                  ~ 1 | group_ID,
-                                  ~ 1 | repeated_trait_ID,
+                                  ~ 1 | experiment_ID_coded,
+                                  ~ 1 | group_ID_coded,
+                                  ~ 1 | repeated_trait_ID_coded,
                                   ~ 1 | bird_species),
                     method = "REML",
                   test = "t",
@@ -852,23 +855,23 @@ MR_SMDH_design <-
 ```
 
 ```{r}
- # MR_SMDH_design_plot <-
- #  orchard_plot(
- #    mod_results(
- #        MR_SMDH_design,
- #      mod = "comparision_type",
- #      group = "paper_ID",
- #      data = dataset_SMDH_design
- #    ),
- #    xlab = "")+
- #     scale_colour_manual(values = c("darkorange", "lightgoldenrod3", "mediumpurple4", "palegreen3")) +
- #  scale_fill_manual(values = c("darkorange", "lightgoldenrod3", "mediumpurple4", "palegreen3")) +
- #  labs(x = "",
- #       y = "SMDH")+
- #  theme(axis.text.y = element_text(angle = 90, vjust = 0.5, hjust = 1))+
- #  ggtitle("Experimental Design")
- # 
- #    MR_SMDH_design_plot
+ MR_SMDH_design_plot <-
+  orchard_plot(
+    mod_results(
+        MR_SMDH_design,
+      mod = "comparision_type",
+      group = "paper_ID",
+      data = dataset_SMDH_design
+    ),
+    xlab = "")+
+     scale_colour_manual(values = c("darkorange", "lightgoldenrod3", "mediumpurple4", "palegreen3")) +
+  scale_fill_manual(values = c("darkorange", "lightgoldenrod3", "mediumpurple4", "palegreen3")) +
+  labs(x = "",
+       y = "SMDH")+
+  theme(axis.text.y = element_text(angle = 90, vjust = 0.5, hjust = 1))+
+  ggtitle("Experimental Design")
+
+    MR_SMDH_design_plot
 ```
 
 #### Bird species
@@ -882,9 +885,9 @@ MR_SMDH_birds <-
                     mods = ~ - 1 + bird_species,
                     random = list(~ 1 | paper_ID,
                                   ~ 1 | Observation_ID,
-                                  ~ 1 | experiment_ID,
-                                  ~ 1 | group_ID,
-                                  ~ 1 | repeated_trait_ID,
+                                  ~ 1 | experiment_ID_coded,
+                                  ~ 1 | group_ID_coded,
+                                  ~ 1 | repeated_trait_ID_coded,
                                   ~ 1 | bird_species),
                     method = "REML",
                   test = "t",
@@ -925,9 +928,9 @@ MR_SMDH_trait <-
                     mods = ~ - 1 + trait_type,
                     random = list(~ 1 | paper_ID,
                                   ~ 1 | Observation_ID,
-                                  ~ 1 | experiment_ID,
-                                  ~ 1 | group_ID,
-                                  ~ 1 | repeated_trait_ID,
+                                  ~ 1 | experiment_ID_coded,
+                                  ~ 1 | group_ID_coded,
+                                  ~ 1 | repeated_trait_ID_coded,
                                   ~ 1 | bird_species),
                     method = "REML",
                   test = "t",
